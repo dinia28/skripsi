@@ -15,6 +15,7 @@ import matplotlib.dates as mdates
 import re
 import os
 os.system('pip install nltk')
+from nltk.stem import PorterStemmer
 
 
 st.set_page_config(

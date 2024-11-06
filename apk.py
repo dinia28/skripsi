@@ -279,9 +279,9 @@ with st.container():
         st.subheader("Seleksi Fitur Berdasarkan Information Gain")
         
         # Memisahkan fitur dan label
-        X = data.drop(columns=['Label'])  # Pastikan 'Label' adalah nama kolom label
-        y = data['Label']
-        print(X.dtypes)
+        X = X.values
+        y = pd.factorize(y)[0]
+      
         # Slider untuk menentukan persentase fitur yang dipilih
         percentage = st.slider("Pilih persentase fitur untuk diseleksi:", 65, 95, 70, 5)
 

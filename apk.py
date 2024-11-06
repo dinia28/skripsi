@@ -100,7 +100,6 @@ with st.container():
         )
         st.dataframe(df, width=600)
         
-        )
         
         # Menampilkan jumlah label
         st.dataframe(data, width=600)

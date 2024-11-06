@@ -172,7 +172,11 @@ with st.container():
         # Tampilkan hasil akhir setelah normalisasi slang words
         st.write("Hasil Normalisasi Slang Words:")
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword']])
-        
+        from nltk.tokenize import word_tokenize
+        import nltk
+
+        # Unduh komponen punkt jika belum tersedia
+        nltk.download('punkt')
         def tokenizer(text):
             text = text.lower()
             return word_tokenize(text)

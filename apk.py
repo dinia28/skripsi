@@ -9,6 +9,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
+import subprocess
+subprocess.run(['pip', 'install', 'imbalanced-learn'])
 from imblearn.over_sampling import RandomOverSampler
 from math import sqrt
 import plotly.graph_objects as go
@@ -20,8 +22,6 @@ import time
 import seaborn as sns
 import os
 os.system('pip install nltk')
-import subprocess
-subprocess.run(['pip', 'install', 'imbalanced-learn'])
 from nltk.stem import PorterStemmer
 
 

@@ -105,8 +105,6 @@ with st.container():
         # Menampilkan frekuensi dari masing-masing label
         label_counts = df['Label'].value_counts()
         st.write(label_counts)
-
-        )
         
         # Menghapus kolom yang tidak diinginkan
         data = data.drop(['periode_data', 'stasiun', 'parameter_pencemar_kritis', 'max', 'kategori'], axis=1)

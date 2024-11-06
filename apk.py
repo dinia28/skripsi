@@ -225,35 +225,32 @@ with st.container():
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal', 'Stemming', 'Full_Text_Stemmed']])
 
     elif selected == "TF-IDF": 
-        # Cek apakah 'Full_Text_Stemmed' ada di DataFrame
-            if 'Full_Text_Stemmed' not in df.columns:
-                df['Full_Text_Stemmed'] = ''
-
+        # Pastikan variabel df sudah didefinisikan sebelumnya
+        if 'Full_Text_Stemmed' not in df.columns:
+            df['Full_Text_Stemmed'] = ''
+        
         # Isi nilai NaN pada kolom 'Full_Text_Stemmed' jika ada
         df['Full_Text_Stemmed'] = df['Full_Text_Stemmed'].fillna('')
-    
+        
         # Memilih kolom 'Full_Text_Stemmed' dan 'Label' saja dari df
         df = df[['Full_Text_Stemmed', 'Label']]
-    
+        
         # Menggunakan TfidfVectorizer untuk menghitung TF-IDF dari kolom teks yang sudah di-stemming
         vectorizer = TfidfVectorizer()
         tfidf_matrix = vectorizer.fit_transform(df['Full_Text_Stemmed'].values.astype('U'))
-    
+        
         # Mendapatkan daftar fitur unik dari hasil TF-IDF
         feature_names = vectorizer.get_feature_names_out()
-    
+        
         # Mengonversi matriks TF-IDF ke DataFrame
         tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
-    
+        
         # Menambahkan kolom label ke dalam DataFrame hasil TF-IDF
         tfidf_df['Label'] = df['Label'].values
-    
+        
         # Menampilkan hasil TF-IDF di Streamlit
         st.write("Hasil TF-IDF:")
         st.dataframe(tfidf_df)
-    
-    except NameError:
-        st.error("Pastikan variabel 'df' atau 'data' sudah didefinisikan sebelum menjalankan kode ini.")
 
         
     elif selected == "Next Day":   

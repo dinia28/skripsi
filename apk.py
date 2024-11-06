@@ -111,13 +111,6 @@ with st.container():
         # Menampilkan frekuensi dari masing-masing label
         label_counts = df['Label'].value_counts()
         st.write(label_counts)
-       
-        st.subheader("IG")
-        # Menggunakan file Excel dari GitHub
-        df = pd.read_excel(
-            "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"
-        )
-        st.dataframe(df, width=600)
         
     elif selected == "Preprocessing":
         # Cleansing
@@ -264,12 +257,20 @@ with st.container():
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
-        st.subheader("Information Gain")
-        # Menggunakan file Excel dari GitHub
-        df = pd.read_excel(
-            "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"
-        )
-        st.dataframe(df, width=600)
+        from io import BytesIO
+        
+        if selected == "Information gain":
+            st.subheader("Information Gain")
+            # Menggunakan requests untuk mengambil file Excel
+            url = "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = BytesIO(response.content)
+                df = pd.read_excel(data)
+                st.dataframe(df, width=600)
+            else:
+                st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
+
         
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

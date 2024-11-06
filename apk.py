@@ -250,9 +250,16 @@ with st.container():
     
     elif selected == "Information gain":
         from io import BytesIO
+        # Pilihan opsi
+        selected = st.sidebar.selectbox("Pilih opsi:", ["Information gain", "Opsi Lainnya"])
+        
+        # Debugging untuk memastikan nilai selected
+        st.write("Selected:", selected)
+        
+        # Blok IF untuk Information Gain
         if selected == "Information gain":
             st.subheader("Information Gain")
-            # Menggunakan requests untuk mengambil file Excel
+            st.write("Proses Information Gain")  # Debugging tambahan
             url = "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"
             response = requests.get(url)
             if response.status_code == 200:
@@ -261,7 +268,6 @@ with st.container():
                 st.dataframe(df, width=600)
             else:
                 st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
-
-        
-st.markdown("---")  # Menambahkan garis pemisah
+                
+        st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

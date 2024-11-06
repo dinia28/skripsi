@@ -257,8 +257,12 @@ with st.container():
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
-        st.title("Tes Streamlit")
-        st.write("Jika Anda melihat teks ini, berarti Streamlit bekerja dengan benar.")
+        st.subheader("Dataset")
+        # Menggunakan file Excel dari GitHub
+        df = pd.read_excel(
+            "https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.xlsx"
+        )
+        st.dataframe(df, width=600)
         
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

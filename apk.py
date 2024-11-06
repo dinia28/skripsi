@@ -269,35 +269,85 @@ with st.container():
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
             
     elif selected == "Model WKNN":
-        def load_data():
-            data = pd.read_excel('hasil_tfidf.xlsx')
-            data.columns = data.columns.str.strip()  # Menghapus spasi di kolom
-            return data
+        # Fungsi untuk menampilkan confusion matrix
+        def plot_confusion_matrix(y_true, y_pred, classes):
+            cm = confusion_matrix(y_true, y_pred)
+            plt.figure(figsize=(8, 6))
+            sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=classes, yticklabels=classes)
+            plt.xlabel("Predicted Labels")
+            plt.ylabel("True Labels")
+            plt.title("Confusion Matrix")
+            st.pyplot()
         
-        data = load_data()
+        # Fungsi untuk memuat model terbaik
+        def load_best_model(filename):
+            return joblib.load(filename)
         
-        st.subheader("Seleksi Fitur Berdasarkan Information Gain")
+        # Fungsi untuk memuat data dan menampilkan grafik akurasi
+        def display_accuracy_graph():
+            # Memuat hasil pelatihan dari file Excel
+            results_df = pd.read_excel('training_results.xlsx')
         
-        # Memisahkan fitur dan label
-        X = X.to_numpy()
-        y = pd.factorize(y)[0]
-      
-        # Slider untuk menentukan persentase fitur yang dipilih
-        percentage = st.slider("Pilih persentase fitur untuk diseleksi:", 65, 95, 70, 5)
-
-        # Fungsi untuk seleksi fitur
-        def feature_selection(X, y, percentage):
-            num_features_to_select = int(percentage / 100 * X.shape[1])
-            selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
-            X_selected = selector.fit_transform(X, y)
-            selected_feature_indices = selector.get_support(indices=True)
-            X_selected_df = X.iloc[:, selected_feature_indices]
-            return X_selected_df
+            # Menampilkan grafik akurasi
+            plt.figure(figsize=(10, 6))
+            plt.plot(results_df['Percentage'], results_df['Accuracy'], marker='o', color='b', label='Accuracy')
+            plt.xlabel('Percentage of Features')
+            plt.ylabel('Accuracy')
+            plt.title('Accuracy vs Percentage of Features')
+            plt.grid(True)
+            plt.xticks(results_df['Percentage'])  # Menampilkan persen fitur yang digunakan
+            plt.legend()
+            st.pyplot()
         
-        # Menampilkan fitur yang dipilih
-        X_selected_df = feature_selection(X, y, percentage)
-        st.write(f"Jumlah Fitur Terpilih: {X_selected_df.shape[1]}")
-        st.write(X_selected_df)
+        # Fungsi utama untuk menampilkan aplikasi Streamlit
+        def main():
+            st.title("Sentiment Analysis with KNN")
+        
+            # Pilihan model
+            model_options = ['Model terbaik 95%', 'Model terbaik 90%', 'Model terbaik 85%', 'Model terbaik 80%', 'Model terbaik 75%', 'Model terbaik 70%', 'Model terbaik 65%', 'Model terbaik 60%']
+            model_choice = st.selectbox("Pilih Model", model_options)
+        
+            # Menentukan file model yang akan dimuat berdasarkan pilihan
+            model_filename = f'best_knn_model_{model_choice.split()[2]}percent.pkl'
+            try:
+                best_model = load_best_model(model_filename)
+                st.write(f"Model {model_choice} berhasil dimuat!")
+            except FileNotFoundError:
+                st.error("Model yang dipilih tidak ditemukan.")
+                return
+        
+            # Menampilkan grafik akurasi
+            st.subheader("Grafik Akurasi vs Persentase Fitur")
+            display_accuracy_graph()
+        
+            # Menampilkan input untuk pengguna
+            st.subheader("Masukkan Data Uji untuk Prediksi")
+            user_input = st.text_area("Masukkan teks untuk dianalisis:", "")
+        
+            if user_input:
+                # Preprocessing input (misalnya, TF-IDF atau fitur lainnya sesuai data)
+                # Misalnya kita menggunakan dummy feature vector, Anda bisa menggantinya dengan proses yang sesuai
+                user_vector = np.random.rand(1, best_model.n_features_in_)  # Placeholder untuk input vector
+                prediction = best_model.predict(user_vector)
+        
+                st.write("Prediksi Sentimen:")
+                st.write("Positif" if prediction == 1 else "Negatif")
+        
+                # Menampilkan confusion matrix dan classification report
+                st.subheader("Classification Report dan Confusion Matrix")
+        
+                # Dummy data untuk confusion matrix (misalnya dari set uji nyata)
+                y_true = np.random.choice([0, 1], size=100)  # Placeholder untuk data asli
+                y_pred = best_model.predict(user_vector)
+        
+                st.text("Classification Report:\n")
+                st.text(classification_report(y_true, y_pred))
+        
+                plot_confusion_matrix(y_true, y_pred, best_model.classes_)
+        
+        # Jalankan aplikasi Streamlit
+        if __name__ == "__main__":
+            main()
 
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

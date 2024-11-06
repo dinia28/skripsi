@@ -93,11 +93,6 @@ with st.container():
         Data yang digunakan dalam aplikasi ini yaitu data dari hasil scrapping ulasan pada google maps
         """
         )
-
-        )
-
-        import streamlit as st
-        import pandas as pd
         
         st.subheader("Dataset")
         # Menggunakan file Excel dari GitHub

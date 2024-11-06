@@ -146,7 +146,6 @@ with st.container():
             return text
     
         # Coba cleaning pada subset kecil
-        df_subset = df['Ulasan'].head(10)  # Ambil 10 baris pertama
         cleaned_subset = df_subset.apply(cleaning)
         st.write(cleaned_subset)
 

@@ -248,21 +248,20 @@ with st.container():
         # import joblib
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
-     elif selected == "Information Gain":
-         import requests
-            from io import BytesIO
+    elif selected == "Information Gain":
+        import requests
+        from io import BytesIO
+        st.subheader("Information Gain")
+        st.write("Proses Information Gain")  # Debugging tambahan
+        url = "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"
+        response = requests.get(url)
             
-            st.subheader("Information Gain")
-            st.write("Proses Information Gain")  # Debugging tambahan
-            url = "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"
-            response = requests.get(url)
-            
-            if response.status_code == 200:
-                data = BytesIO(response.content)
-                df = pd.read_excel(data)
-                st.dataframe(df, width=600)
-            else:
-                st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
+        if response.status_code == 200:
+            data = BytesIO(response.content)
+            df = pd.read_excel(data)
+            st.dataframe(df, width=600)
+        else:
+            st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
                         
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

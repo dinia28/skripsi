@@ -110,11 +110,13 @@ with st.container():
     elif selected == "Preprocessing":
         # Cleansing
         st.subheader("Cleansing")
-        
+    
         def cleaning(text):
             try:
-                st.write(f"Cleaning text: {text}")  # Untuk debugging
+                # Untuk debugging, menampilkan teks yang sedang dibersihkan
+                st.write(f"Cleaning text: {text}")
                 
+                # Proses pembersihan
                 text = re.sub(r'\$\w*', '', str(text))
                 text = re.sub(r'^rt[\s]+', '', str(text))
                 text = re.sub(r'((www\.[^\s]+)|(https?://[^\s]+))', ' ', str(text))
@@ -135,7 +137,11 @@ with st.container():
             except Exception as e:
                 st.write(f"Error cleaning text: {e}")
                 return text
-                st.write(df_subset)  # Ini seharusnya muncul langsung jika berada di blok utama
+    
+        # Menerapkan fungsi cleaning pada kolom 'Ulasan'
+        df['Cleaning'] = df['Ulasan'].apply(cleaning)
+        st.write("Hasil Cleansing:")
+        st.dataframe(df[['Ulasan', 'Cleaning']], width=600)
 
 
     elif selected == "TF-IDF":

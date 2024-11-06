@@ -188,6 +188,24 @@ with st.container():
         st.write("Hasil Tokenizing:")
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing']])
 
+        # Stopword removal
+        sw = pd.read_csv("combined_stop_words.csv", header=None)[0].tolist()
+        
+        # Menggabungkan stopword default dengan stopword tambahan
+        corpus = stopwords.words('indonesian')
+        corpus.extend(sw)
+        
+        # Fungsi stopword removal
+        def stopword_removal(words):
+            return [word for word in words if word not in corpus]
+        
+        # Menerapkan stopword removal pada kolom 'Tokenizing'
+        df['Stopword_Removal'] = df['Tokenizing'].apply(stopword_removal)
+        
+        # Menampilkan hasil
+        st.write("Data setelah preprocessing:")
+        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal']])
+
 
     elif selected == "TF-IDF":
         # Your TF-IDF code goes here

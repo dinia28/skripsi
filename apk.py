@@ -41,7 +41,7 @@ with st.container():
             [
                 "Home",
                 "Data",
-                "Missing Value & Normalisasi",
+                "Preprocessing",
                 "Hasil MAPE",
                 "Next Day",
 
@@ -121,7 +121,7 @@ with st.container():
         # Menampilkan dataframe setelah penghapusan kolom
         st.dataframe(data, width=600)
         
-    elif selected == "Missing Value & Normalisasi":
+    elif selected == "Preprocessing":
         # MEAN IMPUTATION
         st.subheader("""Mean Imputation""")
         # Membaca dataset dari file Excel

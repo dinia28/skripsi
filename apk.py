@@ -5,10 +5,6 @@ import numpy as np
 import json
 import matplotlib.pyplot as plt
 import re
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import SnowballStemmer
-from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectKBest, mutual_info_classif
 from imblearn.over_sampling import RandomOverSampler

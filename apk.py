@@ -177,8 +177,9 @@ with st.container():
 
         # Tokenizing
         def tokenizer(text):
-            text = text.lower()  # Pastikan teks lowercase
-            return word_tokenize(text)
+            if isinstance(text, str):
+                return text.split()  # Tokenisasi sederhana dengan split
+                return []
         
         # Menerapkan tokenizing pada kolom 'slangword'
         df['Tokenizing'] = df['slangword'].apply(tokenizer)

@@ -257,11 +257,56 @@ with st.container():
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
-        st.subheader("Information Gain")
-        df = pd.read_csv(
-            "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.csv"
-        )
-        st.dataframe(df, width=600)
+        # Menampilkan judul dan subjudul
+        st.title("Seleksi Fitur dengan Information Gain")
+        st.subheader("Menghitung dan Menampilkan Fitur Teratas berdasarkan Information Gain")
+        
+        # Memuat dataset yang sudah diproses
+        try:
+            df = pd.read_excel("hasil_preprocessing.xlsx")
+            df.columns = df.columns.str.strip()  # Menghapus spasi ekstra pada nama kolom
+            labels = df['Label']
+            st.write("Data berhasil dimuat dari 'hasil_preprocessing.xlsx'.")
+        except Exception as e:
+            st.error(f"Gagal memuat 'hasil_preprocessing.xlsx'. Error: {e}")
+        
+        # Memuat data TF-IDF dari file Excel
+        try:
+            tfidf_data = pd.read_excel("hasil_tfidf.xlsx")
+            X = tfidf_data
+            st.write("Data TF-IDF berhasil dimuat dari 'hasil_tfidf.xlsx'.")
+        except Exception as e:
+            st.error(f"Gagal memuat 'hasil_tfidf.xlsx'. Error: {e}")
+        
+        # Menghitung Information Gain
+        try:
+            information_gain = mutual_info_classif(X, labels)
+            ig_df = pd.DataFrame({'term': X.columns, 'information_gain': information_gain})
+            ig_df_sorted = ig_df.sort_values(by='information_gain', ascending=False)
+            total_rows = len(ig_df_sorted)
+        
+            # Fungsi untuk mendapatkan fitur teratas berdasarkan persentase
+            def get_top_percentage(percentage, df_sorted, total_rows):
+                num_rows = int(percentage * total_rows)
+                df_top = df_sorted.head(num_rows).copy()
+                df_top.reset_index(drop=True, inplace=True)
+                return df_top
+        
+            # Mendapatkan top berdasarkan persentase
+            top_95 = get_top_percentage(0.95, ig_df_sorted, total_rows)
+            top_90 = get_top_percentage(0.90, ig_df_sorted, total_rows)
+        
+            # Menggabungkan hasil ke dalam DataFrame secara horizontal
+            combined_df = pd.DataFrame()
+            combined_df['Fitur'] = ig_df_sorted['term']
+            combined_df['Rank_95%'] = top_95['information_gain'].reindex(combined_df.index, fill_value=0)
+            combined_df['Rank_90%'] = top_90['information_gain'].reindex(combined_df.index, fill_value=0)
+        
+            # Menampilkan DataFrame hasil seleksi fitur dengan format yang lebih rapi
+            st.write("Hasil Seleksi Fitur dengan Information Gain")
+            st.dataframe(combined_df.style.format(precision=4).set_caption("SELEKSI FITUR INFORMATION GAIN"))
+        except Exception as e:
+            st.error(f"Gagal menghitung Information Gain. Error: {e}")
                 
 # Menampilkan penanda
 st.markdown("---")  # Menambahkan garis pemisah

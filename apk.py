@@ -270,7 +270,7 @@ with st.container():
             
     elif selected == "Model WKNN":
         def load_data():
-            data = pd.read_excel('hasil_ig.xlsx')
+            data = pd.read_excel('hasil_tfidf.xlsx')
             data.columns = data.columns.str.strip()  # Menghapus spasi di kolom
             return data
         

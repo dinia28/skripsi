@@ -257,76 +257,15 @@ with st.container():
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
-        # Fungsi untuk seleksi fitur menggunakan persentase dengan Information Gain
-        def feature_selection(X, y, percentage):
-            # Menghitung jumlah fitur yang akan dipilih berdasarkan persentase
-            num_features_to_select = int(percentage / 100 * X.shape[1])
-            
-            # Inisialisasi SelectKBest dengan mutual_info_classif sebagai skor seleksi
-            selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
-            
-            # Memilih fitur berdasarkan informasi gain
-            X_selected = selector.fit_transform(X, y)
-            
-            # Mendapatkan indeks fitur yang terpilih
-            selected_feature_indices = selector.get_support(indices=True)
-            
-            # DataFrame fitur yang terpilih
-            X_selected_df = X.iloc[:, selected_feature_indices]
-            
-            # Menyimpan skor dari setiap fitur
-            feature_scores = selector.scores_
-            
-            # Membuat DataFrame untuk menyimpan ranking fitur berdasarkan skor
-            feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns, columns=[f'Rank_{percentage}%'])
-            
-            return X_selected_df, feature_rankings
+        # Menampilkan subheader untuk halaman Information Gain
+        st.subheader("Hasil Information Gain")
         
-        # Proses utama TF-IDF dan Information Gain
-        def main():
-            # Memuat data dari file hasil preprocessing
-            df = pd.read_excel("hasil_preprocessing.xlsx")
-            
-            # Asumsi kolom 'Full_Text_Stemmed' adalah teks yang sudah diproses untuk TF-IDF
-            df_tfidf = df[['Full_Text_Stemmed', 'Label']]
-            
-            # Inisialisasi TfidfVectorizer
-            vectorizer = TfidfVectorizer()
-            
-            # Mengonversi kolom teks menjadi matriks TF-IDF
-            tfidf_matrix = vectorizer.fit_transform(df_tfidf['Full_Text_Stemmed'].values.astype('U'))
-            
-            # Mendapatkan nama fitur (kata) yang sesuai dengan nilai TF-IDF
-            feature_names = vectorizer.get_feature_names_out()
-            
-            # Mengonversi matriks TF-IDF menjadi DataFrame
-            tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
-            
-            # Menambahkan kolom 'Label' ke DataFrame
-            tfidf_df['Label'] = df_tfidf['Label']
-            
-            # Memisahkan fitur (X) dan label (y)
-            X = tfidf_df.drop(columns=['Label'])
-            y = tfidf_df['Label']
-            
-            # Persentase fitur yang ingin dipilih (misal 20%)
-            percentage = 20
-            
-            # Memanggil fungsi feature_selection
-            X_selected_df, feature_rankings = feature_selection(X, y, percentage)
-            
-            # Menampilkan hasil seleksi fitur
-            st.subheader("Hasil Seleksi Fitur (TF-IDF dan Information Gain)")
-            st.dataframe(X_selected_df)  # Menampilkan fitur yang terpilih
-            st.dataframe(feature_rankings)  # Menampilkan ranking fitur berdasarkan skor IG
-        
-            # Opsional: Menyimpan hasil seleksi fitur ke file Excel
-            X_selected_df.to_excel("selected_features.xlsx", index=False)
-            feature_rankings.to_excel("feature_rankings.xlsx", index=True)
-        
-        # Memanggil fungsi main jika dijalankan langsung
-        if __name__ == "__main__":
-            main()
-# Menampilkan penanda
+        # Memuat data dari file hasil_ig.csv
+        try:
+            hasil_ig_df = pd.read_csv("hasil_ig.csv")  # Ganti path jika file berada di lokasi berbeda
+            st.dataframe(hasil_ig_df)  # Menampilkan DataFrame di Streamlit
+        except FileNotFoundError:
+            st.error("File hasil_ig.csv tidak ditemukan. Pastikan file tersebut ada di direktori yang benar.")
+        # Menampilkan penanda
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

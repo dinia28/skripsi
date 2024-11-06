@@ -140,7 +140,6 @@ with st.container():
         # Mengambil data dari file Excel
         df = pd.read_excel("https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.xlsx")
         # Cek kolom dan isi untuk memastikan kolom 'Ulasan' ada
-        st.write("Kolom dalam df:", df.columns)
         st.write("Data contoh sebelum cleaning:", df['Ulasan'].head())
         
         # Mengisi nilai NaN dengan string kosong untuk kolom 'Ulasan'
@@ -150,6 +149,10 @@ with st.container():
         df['Cleaning'] = df['Ulasan'].apply(cleaning)
         st.write("Hasil Cleansing:")
         st.dataframe(df[['Ulasan', 'Cleaning']])
+        # Menambahkan proses case folding
+        df['CaseFolding'] = df['Cleaning'].str.lower()
+        st.write("Hasil Case Folding:")
+        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding']])
 
 
     elif selected == "TF-IDF":

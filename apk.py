@@ -15,6 +15,7 @@ import matplotlib.dates as mdates
 import re
 import os
 os.system('pip install nltk')
+nltk.download('punkt')
 
 
 st.set_page_config(

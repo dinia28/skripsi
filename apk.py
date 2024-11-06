@@ -192,8 +192,7 @@ with st.container():
         sw = pd.read_csv("combined_stop_words.csv", header=None)[0].tolist()
         
         # Gabungkan stopword default dengan stopword tambahan
-        corpus = stopwords.words('indonesian')
-        corpus.extend(sw)
+        corpus = sw
         
         # Fungsi stopword removal
         def stopword_removal(words):

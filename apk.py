@@ -27,7 +27,7 @@ from nltk.stem import PorterStemmer
 
 st.set_page_config(
     page_title="Analisis Sentimen Rumah Makan",
-    page_icon="https://raw.githubusercontent.com/dinia28/skripsi/main/rumah.jpeg",
+    page_icon="https://raw.githubusercontent.com/dinia28/skripsi/main/rumah.jpg",
     layout="centered",
     initial_sidebar_state="expanded",
     menu_items={
@@ -46,7 +46,7 @@ with st.container():
     with st.sidebar:
         selected = option_menu(
             st.write(
-                """<h2 style = "text-align: center;"><img src="https://raw.githubusercontent.com/dinia28/skripsi/main/rumah.jpeg" width="130" height="130"><br></h2>""",
+                """<h2 style = "text-align: center;"><img src="https://raw.githubusercontent.com/dinia28/skripsi/main/rumah.jpg" width="130" height="130"><br></h2>""",
                 unsafe_allow_html=True,
             ),
             [

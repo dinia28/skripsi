@@ -269,120 +269,35 @@ with st.container():
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
             
     elif selected == "Model WKNN":
-        # Fungsi utama untuk training model
-        def model_training(X, y, n_neighbors_options, weights_options, metric_options):
-            # Membagi data latih dan uji
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        def load_data():
+            data = pd.read_excel('hasil_ig.xlsx')
+            data.columns = data.columns.str.strip()  # Menghapus spasi di kolom
+            return data
         
-            # Variabel untuk menyimpan performa terbaik
-            best_accuracy = 0
-            best_model = None
-            best_param_set = {}
-            elapsed_time = 0
+        data = load_data()
         
-            # Coba semua kombinasi hyperparameter
-            for n_neighbors in n_neighbors_options:
-                for weights in weights_options:
-                    for metric in metric_options:
-                        start_time = time.time()
-                        knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, metric=metric)
-                        knn_model.fit(X_train, y_train)
-                        accuracy = knn_model.score(X_test, y_test)
-                        end_time = time.time()
-                        elapsed_time = end_time - start_time
+        st.subheader("Seleksi Fitur Berdasarkan Information Gain")
         
-                        if accuracy > best_accuracy:
-                            best_accuracy = accuracy
-                            best_model = knn_model
-                            best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
+        # Memisahkan fitur dan label
+        X = data.drop(columns=['Label'])  # Pastikan 'Label' adalah nama kolom label
+        y = data['Label']
         
-                        # Menampilkan hasil sementara di Streamlit
-                        st.write(f"Params: n_neighbors={n_neighbors}, weights={weights}, metric={metric} | "
-                                 f"Accuracy: {accuracy:.4f} | Time: {elapsed_time:.2f} seconds")
+        # Slider untuk menentukan persentase fitur yang dipilih
+        percentage = st.slider("Pilih persentase fitur untuk diseleksi:", 65, 60, 75, 70, 85, 80, 95)
         
-            # Menampilkan laporan klasifikasi dan confusion matrix menggunakan model terbaik
-            y_pred = best_model.predict(X_test)
-            class_report = classification_report(y_test, y_pred)
-            st.write("Classification Report:\n", class_report)
+        # Fungsi untuk seleksi fitur
+        def feature_selection(X, y, percentage):
+            num_features_to_select = int(percentage / 100 * X.shape[1])
+            selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
+            X_selected = selector.fit_transform(X, y)
+            selected_feature_indices = selector.get_support(indices=True)
+            X_selected_df = X.iloc[:, selected_feature_indices]
+            return X_selected_df
         
-            cm = confusion_matrix(y_test, y_pred)
-            fig, ax = plt.subplots()
-            sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=best_model.classes_, yticklabels=best_model.classes_)
-            plt.xlabel("Predicted Labels")
-            plt.ylabel("True Labels")
-            plt.title("Confusion Matrix")
-            st.pyplot(fig)
-        
-            # Simpan model terbaik
-            joblib.dump(best_model, 'best_knn_model.pkl')
-        
-            return best_accuracy, best_model, best_param_set, elapsed_time
-        
-        # Setup Streamlit UI
-        st.title("Model Training with k-Nearest Neighbors (KNN)")
-        initial_percentage = st.number_input("Initial Percentage", min_value=1, max_value=100, value=95)
-        max_percentage = st.number_input("Max Percentage", min_value=1, max_value=100, value=60)
-        step_percentage = st.number_input("Step Percentage", min_value=1, max_value=100, value=1)
-        n_neighbors_options = [3, 5, 7, 9]
-        weights_options = ['distance']
-        metric_options = ['euclidean', 'manhattan']
-        
-        # Dummy data untuk contoh
-        # Misalnya, data ada di file CSV
-        data = pd.read_csv('hasil_ig.csv')
-        
-        # Pisahkan fitur (X) dan target label (y)
-        X = data.drop('target_column', axis=1)  # Misalnya target ada di kolom 'target_column'
-        y = data['target_column']  # Label target
-                
-        ros = RandomOverSampler(random_state=42)
-        X_resampled, y_resampled = ros.fit_resample(X, y)
-        
-        percentages = []
-        accuracies = []
-        elapsed_times = []
-        best_models = []
-        best_params = []
-        
-        progress_bar = st.progress(0)
-        for i, percentage in enumerate(range(initial_percentage, max_percentage + 1, step_percentage)):
-            X_selected, feature_rankings = feature_selection(X_resampled, y_resampled, percentage)
-            accuracy, best_model, best_param_set, elapsed_time = model_training(
-                X_selected, y_resampled, n_neighbors_options, weights_options, metric_options)
-        
-            percentages.append(percentage)
-            accuracies.append(accuracy)
-            elapsed_times.append(elapsed_time)
-            best_models.append(best_model)
-            best_params.append(best_param_set)
-        
-            model_filename = f'best_knn_model_{percentage}percent.pkl'
-            joblib.dump(best_model, model_filename)
-            st.write(f"Model saved as: {model_filename}")
-            st.write(f"Best Params for {percentage}% features: {best_param_set}")
-            st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
-            st.write(f"Total Elapsed Time for Best Model: {elapsed_time:.2f} seconds")
-        
-            progress_bar.progress((i + 1) / len(range(initial_percentage, max_percentage + 1, step_percentage)))
-        
-        # Simpan hasil pelatihan ke file Excel
-        results_df = pd.DataFrame({
-            'Percentage': percentages,
-            'Accuracy': accuracies,
-            'Elapsed Time (s)': elapsed_times,
-            'Best Parameters': best_params
-        })
-        
-        results_df.to_excel('training_results.xlsx', index=False)
-        st.write("Training results saved as 'training_results.xlsx'")
-        
-        # Tampilkan tombol unduh
-        with open('training_results.xlsx', 'rb') as file:
-            st.download_button(
-                label="Download Training Results",
-                data=file,
-                file_name="training_results.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+        # Menampilkan fitur yang dipilih
+        X_selected_df = feature_selection(X, y, percentage)
+        st.write(f"Jumlah Fitur Terpilih: {X_selected_df.shape[1]}")
+        st.write(X_selected_df)
+
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

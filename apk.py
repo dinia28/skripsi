@@ -27,7 +27,7 @@ from nltk.stem import PorterStemmer
 
 st.set_page_config(
     page_title="Analisis Sentimen Rumah Makan",
-    page_icon="https://raw.githubusercontent.com/shintaputrii/skripsi/main/house_1152964.png",
+    page_icon="https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.jpeg",
     layout="centered",
     initial_sidebar_state="expanded",
     menu_items={

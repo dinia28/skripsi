@@ -257,6 +257,7 @@ with st.container():
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
+        st.subheader("Information Gain")
         df = pd.read_csv(
             "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.csv"
         )

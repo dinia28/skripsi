@@ -228,37 +228,28 @@ with st.container():
     elif selected == "TF-IDF":
         # Load the dataset from 'hasil_preprocessing.xlsx'
         df = pd.read_excel("hasil_preprocessing.xlsx")
-        
         # Assume 'Full_Text_Stemmed' is the column with the processed text for TF-IDF
         # Create a new DataFrame for TF-IDF
-        df_tfidf = df[['Full_Text_Stemmed', 'Label']]
-        
+        df_tfidf = df[['Full_Text_Stemmed', 'Label']]  
         # Initialize the TfidfVectorizer
         vectorizer = TfidfVectorizer()
-        
         # Transform the 'Full_Text_Stemmed' column into a TF-IDF matrix
-        tfidf_matrix = vectorizer.fit_transform(df_tfidf['Full_Text_Stemmed'].values.astype('U'))
-        
+        tfidf_matrix = vectorizer.fit_transform(df_tfidf['Full_Text_Stemmed'].values.astype('U')) 
         # Get feature names (the words corresponding to the TF-IDF values)
         feature_names = vectorizer.get_feature_names_out()
-        
         # Convert the TF-IDF matrix into a DataFrame
-        tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
-        
+        tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names) 
         # Add the 'Label' column to the DataFrame
         tfidf_df['Label'] = df_tfidf['Label']
-        
         # Display the TF-IDF result
         st.subheader("TF-IDF Results")
         st.dataframe(tfidf_df)
-        
         # Optionally, you can save the vectorizer for future use (for example, to use in predictions)
         # import joblib
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
         from io import BytesIO
-        
         if selected == "Information gain":
             st.subheader("Information Gain")
             # Menggunakan requests untuk mengambil file Excel

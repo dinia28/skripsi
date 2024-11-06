@@ -260,7 +260,7 @@ with st.container():
         st.subheader("Dataset")
         # Menggunakan file Excel dari GitHub
         df = pd.read_excel(
-            "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.excel"
+            "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"
         )
         st.dataframe(df, width=600)
         

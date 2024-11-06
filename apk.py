@@ -271,23 +271,22 @@ with st.container():
             num_features_to_select = int(percentage / 100 * X.shape[1])
         
         # Menggunakan SelectKBest dengan mutual_info_classif
-        selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
-        
-        # Melakukan fit dan transformasi pada fitur
-        X_selected = selector.fit_transform(X, y)
-        
-        # Mendapatkan indeks fitur yang dipilih
-        selected_feature_indices = selector.get_support(indices=True)
-        
-        # Membuat DataFrame dengan fitur yang dipilih
-        X_selected_df = X.iloc[:, selected_feature_indices]
-        
-        # Mendapatkan skor fitur
-        feature_scores = selector.scores_
-        
-        # Merangking fitur berdasarkan skor
-        feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns, columns=[f'Rank_{percentage}%'])
-        
+            selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
+            
+            # Melakukan fit dan transformasi pada fitur
+            X_selected = selector.fit_transform(X, y)
+            
+            # Mendapatkan indeks fitur yang dipilih
+            selected_feature_indices = selector.get_support(indices=True)
+            
+            # Membuat DataFrame dengan fitur yang dipilih
+            X_selected_df = X.iloc[:, selected_feature_indices]
+            
+            # Mendapatkan skor fitur
+            feature_scores = selector.scores_
+            
+            # Merangking fitur berdasarkan skor
+            feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns, columns=[f'Rank_{percentage}%'])
         return X_selected_df, feature_rankings
 
     # Menampilkan UI Streamlit

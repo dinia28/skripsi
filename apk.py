@@ -322,7 +322,7 @@ with st.container():
         st.title("Model Training with k-Nearest Neighbors (KNN)")
         initial_percentage = st.number_input("Initial Percentage", min_value=1, max_value=100, value=95)
         max_percentage = st.number_input("Max Percentage", min_value=1, max_value=100, value=60)
-        step_percentage = st.number_input("Step Percentage", min_value=1, max_value=100, value=-5)
+        step_percentage = st.number_input("Step Percentage", min_value=1, max_value=100, value=1)
         n_neighbors_options = [3, 5, 7, 9]
         weights_options = ['distance']
         metric_options = ['euclidean', 'manhattan']

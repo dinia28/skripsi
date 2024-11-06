@@ -257,8 +257,6 @@ with st.container():
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
-       st.title("Analisis Sentimen Rumah Makan")
-
         # Menampilkan subheader untuk halaman Information Gain
         st.subheader("Hasil Information Gain")
         

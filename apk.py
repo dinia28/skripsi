@@ -173,20 +173,6 @@ with st.container():
         st.write("Hasil Normalisasi Slang Words:")
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword']])
 
-        # Menggunakan fungsi tokenizer sederhana
-        df['Tokenizing'] = df['slangword'].apply(simple_tokenizer)
-
-        # Unduh komponen punkt jika belum tersedia
-        def simple_tokenizer(text):
-            return text.split()  # Membagi berdasarkan spasi
-    
-        # Menerapkan fungsi tokenizing
-        df['Tokenizing'] = df['slangword'].apply(tokenizer)
-        
-        # Tampilkan hasil akhir setelah tokenizing
-        st.write("Hasil Tokenizing:")
-        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing']])
-
 
     elif selected == "TF-IDF":
         # Your TF-IDF code goes here

@@ -106,13 +106,6 @@ with st.container():
         label_counts = df['Label'].value_counts()
         st.write(label_counts)
         
-        # Menghapus kolom yang tidak diinginkan
-        data = data.drop(['periode_data', 'stasiun', 'parameter_pencemar_kritis', 'max', 'kategori'], axis=1)
-        data.tanggal = pd.to_datetime(data.tanggal)
-        
-        # Menampilkan dataframe setelah penghapusan kolom
-        st.dataframe(data, width=600)
-        
     elif selected == "Missing Value & Normalisasi":
         # MEAN IMPUTATION
         st.subheader("""Mean Imputation""")

@@ -259,8 +259,8 @@ with st.container():
     elif selected == "Information gain":
         st.subheader("Dataset")
         # Menggunakan file Excel dari GitHub
-        df = pd.read_excel(
-            "https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.xlsx"
+        df = pd.read_csv(
+            "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.csv"
         )
         st.dataframe(df, width=600)
         

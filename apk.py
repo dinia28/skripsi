@@ -302,6 +302,6 @@ st.dataframe(X_selected)
 st.subheader(f"Ranking Fitur ({percentage}%):")
 st.dataframe(feature_rankings)
 
-    # Menampilkan penanda
-    st.markdown("---")  # Menambahkan garis pemisah
-    st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")
+# Menampilkan penanda
+st.markdown("---")  # Menambahkan garis pemisah
+st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

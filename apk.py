@@ -228,7 +228,7 @@ with st.container():
         # Pastikan variabel data atau df sudah didefinisikan sebelumnya
         try:
         # Cek apakah 'Full_Text_Stemmed' ada di DataFrame
-        if 'Full_Text_Stemmed' not in df.columns:
+            if 'Full_Text_Stemmed' not in df.columns:
             df['Full_Text_Stemmed'] = ''
     
         # Isi nilai NaN pada kolom 'Full_Text_Stemmed' jika ada

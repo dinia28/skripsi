@@ -149,10 +149,29 @@ with st.container():
         df['Cleaning'] = df['Ulasan'].apply(cleaning)
         st.write("Hasil Cleansing:")
         st.dataframe(df[['Ulasan', 'Cleaning']])
+        
         # Menambahkan proses case folding
         df['CaseFolding'] = df['Cleaning'].str.lower()
         st.write("Hasil Case Folding:")
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding']])
+        
+        # Membaca file slang words
+        slangword_normalisasi = pd.read_csv("combined_slang_words.csv")
+        
+        # Membuat kamus slang words untuk normalisasi
+        kata_normalisasi_dict = {row[0]: row[1] for _, row in slangword_normalisasi.iterrows()}
+        
+        # Fungsi untuk normalisasi kata slang
+        def normalisasi_kata(document):
+            return ' '.join([kata_normalisasi_dict.get(term, term) for term in document.split()])
+        
+        # Menerapkan fungsi normalisasi slang words
+        df['CaseFolding'] = df['CaseFolding'].fillna('').astype(str)
+        df['slangword'] = df['CaseFolding'].apply(normalisasi_kata)
+        
+        # Tampilkan hasil akhir setelah normalisasi slang words
+        st.write("Hasil Normalisasi Slang Words:")
+        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword']])
 
 
     elif selected == "TF-IDF":

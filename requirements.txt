@@ -2,10 +2,8 @@ streamlit
 scikit-learn
 scipy
 pandas
-nltk
 streamlit-option-menu
 matplotlib
 numpy
 plotly
 openpyxl
-json

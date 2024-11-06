@@ -225,31 +225,40 @@ with st.container():
         st.write("Data setelah Stemming:")
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal', 'Stemming', 'Full_Text_Stemmed']])
 
-    elif selected == "TF-IDF": 
-        # Memilih hanya kolom yang relevan untuk TF-IDF: 'Full_Text_Stemmed' dan 'Label'
-        data = df[['Full_Text_Stemmed', 'Label']]
+    elif selected == "TF-IDF":
+        # Load the dataset from 'hasil_preprocessing.xlsx'
+        df = pd.read_excel("hasil_preprocessing.xlsx")
         
-        # Menggunakan TfidfVectorizer untuk menghitung TF-IDF dari kolom teks
+        # Display the data
+        st.subheader("Dataset")
+        st.dataframe(df)
+        
+        # Assume 'Full_Text_Stemmed' is the column with the processed text for TF-IDF
+        # Create a new DataFrame for TF-IDF
+        df_tfidf = df[['Full_Text_Stemmed', 'Label']]
+        
+        # Initialize the TfidfVectorizer
         vectorizer = TfidfVectorizer()
         
-        # Mengonversi teks ke matriks TF-IDF
+        # Transform the 'Full_Text_Stemmed' column into a TF-IDF matrix
         tfidf_matrix = vectorizer.fit_transform(df_tfidf['Full_Text_Stemmed'].values.astype('U'))
         
-        # Mendapatkan nama fitur (kata-kata unik) dari matriks TF-IDF
+        # Get feature names (the words corresponding to the TF-IDF values)
         feature_names = vectorizer.get_feature_names_out()
         
-        # Mengonversi matriks TF-IDF ke dalam bentuk DataFrame untuk kemudahan manipulasi
+        # Convert the TF-IDF matrix into a DataFrame
         tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
         
-        # Menambahkan kolom 'Label' ke dalam DataFrame hasil TF-IDF
+        # Add the 'Label' column to the DataFrame
         tfidf_df['Label'] = df_tfidf['Label']
         
-        # Menampilkan hasil TF-IDF
-        st.write("Hasil TF-IDF:")
+        # Display the TF-IDF result
+        st.subheader("TF-IDF Results")
         st.dataframe(tfidf_df)
         
-        # Jika ingin menyimpan vectorizer untuk digunakan nanti (misalnya di tahap prediksi), simpan dengan joblib
-        joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
+        # Optionally, you can save the vectorizer for future use (for example, to use in predictions)
+        # import joblib
+        # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     elif selected == "Next Day":   
         st.subheader("PM10")       
         # Fungsi untuk normalisasi data

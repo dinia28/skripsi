@@ -257,7 +257,7 @@ with st.container():
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
-        st.subheader("Dataset")
+        st.subheader("Information Gain")
         # Menggunakan file Excel dari GitHub
         df = pd.read_excel(
             "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"

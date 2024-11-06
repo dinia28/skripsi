@@ -225,8 +225,6 @@ with st.container():
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal', 'Stemming', 'Full_Text_Stemmed']])
 
     elif selected == "TF-IDF": 
-        # Pastikan variabel data atau df sudah didefinisikan sebelumnya
-        try:
         # Cek apakah 'Full_Text_Stemmed' ada di DataFrame
             if 'Full_Text_Stemmed' not in df.columns:
                 df['Full_Text_Stemmed'] = ''

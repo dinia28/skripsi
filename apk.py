@@ -282,7 +282,26 @@ with st.container():
         y = df["Label"]
 
         # Melakukan training menggunakan fungsi model_training yang telah dibuat
-        accuracy, best_model, best_param_set, elapsed_time = model_training(X, y, n_neighbors_options, weights_options, metric_options)
+        def model_training(X, y, n_neighbors_options, weights_options, metric_options):
+            param_grid = {
+                'n_neighbors': n_neighbors_options,
+                'weights': weights_options,
+                'metric': metric_options
+            }
+            
+            model = KNeighborsClassifier()
+            
+            grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, n_jobs=-1)
+            
+            start_time = time()
+            grid_search.fit(X, y)
+            elapsed_time = time() - start_time
+            
+            best_model = grid_search.best_estimator_
+            best_param_set = grid_search.best_params_
+            accuracy = grid_search.best_score_
+            
+            return accuracy, best_model, best_param_set, elapsed_time
 
         # Menampilkan hasil terbaik
         st.write(f"**Akurasi Terbaik:** {accuracy:.4f}")

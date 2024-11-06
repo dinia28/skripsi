@@ -111,43 +111,31 @@ with st.container():
         # Cleansing
         st.subheader("Cleansing")
         
-        # Fungsi cleaning
         def cleaning(text):
-            # menghapus kata yang dimulai dengan tanda $
-            text = re.sub(r'\$\w*', '', str(text))
-            # menghapus "rt" dan spasi yang mengikuti di awal baris teks
-            text = re.sub(r'^rt[\s]+', '', str(text))
-            # menghapus url atau tautan web
-            text = re.sub(r'((www\.[^\s]+)|(https?://[^\s]+))', ' ', str(text))
-            # tanda kutip ganda
-            text = re.sub(r'&quot;', " ", str(text))
-            # menghapus angka
-            text = re.sub(r"\d+", " ", str(text))
-            # menghapus angka yang hanya terdiri dari satu huruf
-            text = re.sub(r"\b[a-zA-Z]\b", "", str(text))
-            # menghapus karakter non alpha-numerik dan non spasi
-            text = re.sub(r"[^\w\s]", " ", str(text))
-            # menggabungkan karakter yang sama menjadi dua kemunculan
-            text = re.sub(r'(.)\1+', r'\1\1', str(text))
-            # mengganti dua atau lebih spasi dengan satu spasi
-            text = re.sub(r"\s+", " ", str(text))
-            # menghapus karakter hashtag
-            text = re.sub(r'#', '', str(text))
-            # menghapus karakter selain alfanumerik
-            text = re.sub(r'[^a-zA-Z0-9]', ' ', str(text))
-            # mengganti dua atau lebih spasi dengan satu spasi
-            text = re.sub(r'\s\s+', ' ', str(text))
-            # menghapus "rt" dan spasi yang mengikuti di awal baris teks
-            text = re.sub(r'^RT[\s]+', '', str(text))
-            # menghapus "b" dan spasi yang mengikuti di awal baris teks
-            text = re.sub(r'^b[\s]+', '', str(text))
-            # menghapus "link" dan spasi yang mengikuti di awal baris teks
-            text = re.sub(r'^link[\s]+', '', str(text))
-            return text
-    
-        # Coba cleaning pada subset kecil
-        cleaned_subset = df_subset.apply(cleaning)
-        st.write(cleaned_subset)
+            try:
+                st.write(f"Cleaning text: {text}")  # Untuk debugging
+                
+                text = re.sub(r'\$\w*', '', str(text))
+                text = re.sub(r'^rt[\s]+', '', str(text))
+                text = re.sub(r'((www\.[^\s]+)|(https?://[^\s]+))', ' ', str(text))
+                text = re.sub(r'&quot;', " ", str(text))
+                text = re.sub(r"\d+", " ", str(text))
+                text = re.sub(r"\b[a-zA-Z]\b", "", str(text))
+                text = re.sub(r"[^\w\s]", " ", str(text))
+                text = re.sub(r'(.)\1+', r'\1\1', str(text))
+                text = re.sub(r"\s+", " ", str(text))
+                text = re.sub(r'#', '', str(text))
+                text = re.sub(r'[^a-zA-Z0-9]', ' ', str(text))
+                text = re.sub(r'\s\s+', ' ', str(text))
+                text = re.sub(r'^RT[\s]+', '', str(text))
+                text = re.sub(r'^b[\s]+', '', str(text))
+                text = re.sub(r'^link[\s]+', '', str(text))
+                
+                return text
+            except Exception as e:
+                st.write(f"Error cleaning text: {e}")
+                return text
+
 
     elif selected == "TF-IDF":
         # Your TF-IDF code goes here

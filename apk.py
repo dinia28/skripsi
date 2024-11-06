@@ -13,6 +13,7 @@ from math import sqrt
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import joblib
 import re
 import os
 os.system('pip install nltk')
@@ -225,33 +226,28 @@ with st.container():
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal', 'Stemming', 'Full_Text_Stemmed']])
 
     elif selected == "TF-IDF": 
-        # Pastikan variabel df sudah didefinisikan sebelumnya
-        if 'Full_Text_Stemmed' not in df.columns:
-            df['Full_Text_Stemmed'] = ''
+        # Ambil data yang sudah melalui proses Stemming dan labelnya
+        df = data[['Full_Text_Stemmed', 'Label']]
         
-        # Isi nilai NaN pada kolom 'Full_Text_Stemmed' jika ada
-        df['Full_Text_Stemmed'] = df['Full_Text_Stemmed'].fillna('')
-        
-        # Memilih kolom 'Full_Text_Stemmed' dan 'Label' saja dari df
-        df = df[['Full_Text_Stemmed', 'Label']]
-        
-        # Menggunakan TfidfVectorizer untuk menghitung TF-IDF dari kolom teks yang sudah di-stemming
+        # Menggunakan TfidfVectorizer untuk menghitung TF-IDF dari kolom teks
         vectorizer = TfidfVectorizer()
         tfidf_matrix = vectorizer.fit_transform(df['Full_Text_Stemmed'].values.astype('U'))
         
-        # Mendapatkan daftar fitur unik dari hasil TF-IDF
+        # Melihat daftar kata-kata unik yang digunakan sebagai fitur dalam perhitungan TF-IDF
         feature_names = vectorizer.get_feature_names_out()
         
-        # Mengonversi matriks TF-IDF ke DataFrame
+        # Mengonversi matriks TF-IDF ke dalam bentuk DataFrame
         tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
         
         # Menambahkan kolom label ke dalam DataFrame hasil TF-IDF
-        tfidf_df['Label'] = df['Label'].values
+        tfidf_df['Label'] = df['Label']
         
-        # Menampilkan hasil TF-IDF di Streamlit
-        st.write("Hasil TF-IDF:")
+        # Mencetak hasil TF-IDF
+        st.write("TF-IDF Matrix:")
         st.dataframe(tfidf_df)
-
+        
+        # Jika ingin menyimpan model TF-IDF untuk digunakan di masa depan, gunakan joblib
+        # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
         
     elif selected == "Next Day":   
         st.subheader("PM10")       

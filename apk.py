@@ -7,8 +7,9 @@ from sklearn.impute import SimpleImputer
 from sklearn.feature_selection import SelectKBest, mutual_info_classif
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsRegressor
-from sklearn.metrics import mean_absolute_percentage_error
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import classification_report, confusion_matrix
+from imblearn.over_sampling import RandomOverSampler
 from math import sqrt
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
@@ -16,6 +17,8 @@ import matplotlib.dates as mdates
 import joblib
 import re
 import os
+import time
+import seaborn as sns
 os.system('pip install nltk')
 from nltk.stem import PorterStemmer
 
@@ -262,6 +265,117 @@ with st.container():
             st.dataframe(df, width=600)
         else:
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
-                        
+            
+    elif selected == "Model WKNN":
+        # Fungsi utama untuk training model
+        def model_training(X, y, n_neighbors_options, weights_options, metric_options):
+            # Membagi data latih dan uji
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        
+            # Variabel untuk menyimpan performa terbaik
+            best_accuracy = 0
+            best_model = None
+            best_param_set = {}
+            elapsed_time = 0
+        
+            # Coba semua kombinasi hyperparameter
+            for n_neighbors in n_neighbors_options:
+                for weights in weights_options:
+                    for metric in metric_options:
+                        start_time = time.time()
+                        knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, metric=metric)
+                        knn_model.fit(X_train, y_train)
+                        accuracy = knn_model.score(X_test, y_test)
+                        end_time = time.time()
+                        elapsed_time = end_time - start_time
+        
+                        if accuracy > best_accuracy:
+                            best_accuracy = accuracy
+                            best_model = knn_model
+                            best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
+        
+                        # Menampilkan hasil sementara di Streamlit
+                        st.write(f"Params: n_neighbors={n_neighbors}, weights={weights}, metric={metric} | "
+                                 f"Accuracy: {accuracy:.4f} | Time: {elapsed_time:.2f} seconds")
+        
+            # Menampilkan laporan klasifikasi dan confusion matrix menggunakan model terbaik
+            y_pred = best_model.predict(X_test)
+            class_report = classification_report(y_test, y_pred)
+            st.write("Classification Report:\n", class_report)
+        
+            cm = confusion_matrix(y_test, y_pred)
+            fig, ax = plt.subplots()
+            sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=best_model.classes_, yticklabels=best_model.classes_)
+            plt.xlabel("Predicted Labels")
+            plt.ylabel("True Labels")
+            plt.title("Confusion Matrix")
+            st.pyplot(fig)
+        
+            # Simpan model terbaik
+            joblib.dump(best_model, 'best_knn_model.pkl')
+        
+            return best_accuracy, best_model, best_param_set, elapsed_time
+        
+        # Setup Streamlit UI
+        st.title("Model Training with k-Nearest Neighbors (KNN)")
+        initial_percentage = st.number_input("Initial Percentage", min_value=1, max_value=100, value=95)
+        max_percentage = st.number_input("Max Percentage", min_value=1, max_value=100, value=60)
+        step_percentage = st.number_input("Step Percentage", min_value=1, max_value=100, value=-5)
+        n_neighbors_options = [3, 5, 7, 9]
+        weights_options = ['distance']
+        metric_options = ['euclidean', 'manhattan']
+        
+        # Dummy data untuk contoh
+        X, y = ...  # Pastikan data X, y sudah siap untuk digunakan
+        
+        ros = RandomOverSampler(random_state=42)
+        X_resampled, y_resampled = ros.fit_resample(X, y)
+        
+        percentages = []
+        accuracies = []
+        elapsed_times = []
+        best_models = []
+        best_params = []
+        
+        progress_bar = st.progress(0)
+        for i, percentage in enumerate(range(initial_percentage, max_percentage + 1, step_percentage)):
+            X_selected, feature_rankings = feature_selection(X_resampled, y_resampled, percentage)
+            accuracy, best_model, best_param_set, elapsed_time = model_training(
+                X_selected, y_resampled, n_neighbors_options, weights_options, metric_options)
+        
+            percentages.append(percentage)
+            accuracies.append(accuracy)
+            elapsed_times.append(elapsed_time)
+            best_models.append(best_model)
+            best_params.append(best_param_set)
+        
+            model_filename = f'best_knn_model_{percentage}percent.pkl'
+            joblib.dump(best_model, model_filename)
+            st.write(f"Model saved as: {model_filename}")
+            st.write(f"Best Params for {percentage}% features: {best_param_set}")
+            st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
+            st.write(f"Total Elapsed Time for Best Model: {elapsed_time:.2f} seconds")
+        
+            progress_bar.progress((i + 1) / len(range(initial_percentage, max_percentage + 1, step_percentage)))
+        
+        # Simpan hasil pelatihan ke file Excel
+        results_df = pd.DataFrame({
+            'Percentage': percentages,
+            'Accuracy': accuracies,
+            'Elapsed Time (s)': elapsed_times,
+            'Best Parameters': best_params
+        })
+        
+        results_df.to_excel('training_results.xlsx', index=False)
+        st.write("Training results saved as 'training_results.xlsx'")
+        
+        # Tampilkan tombol unduh
+        with open('training_results.xlsx', 'rb') as file:
+            st.download_button(
+                label="Download Training Results",
+                data=file,
+                file_name="training_results.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

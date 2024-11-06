@@ -290,16 +290,16 @@ with st.container():
             
             return X_selected_df, feature_rankings
     
-        # Contoh penggunaan:
-        percentage = 10  # Memilih 10% fitur teratas
-        X_selected_df, feature_rankings = feature_selection(X, y, percentage)
-        
-        # Menampilkan fitur yang dipilih dan peringkatnya
-        st.subheader(f"Top {percentage}% Fitur Terpilih")
-        st.dataframe(X_selected_df)
-        
-        st.subheader("Peringkat Fitur")
-        st.dataframe(feature_rankings)
+            # Contoh penggunaan:
+            percentage = 10  # Memilih 10% fitur teratas
+            X_selected_df, feature_rankings = feature_selection(X, y, percentage)
+            
+            # Menampilkan fitur yang dipilih dan peringkatnya
+            st.subheader(f"Top {percentage}% Fitur Terpilih")
+            st.dataframe(X_selected_df)
+            
+            st.subheader("Peringkat Fitur")
+            st.dataframe(feature_rankings)
 
     # Menampilkan penanda
     st.markdown("---")  # Menambahkan garis pemisah

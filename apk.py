@@ -268,145 +268,56 @@ with st.container():
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
     
     elif selected == "Model WKNN":
-        def load_data():
-            return pd.read_excel('hasil_tfidf.xlsx')
+        # Menampilkan deskripsi tentang Model WKNN
+        st.write("""
+            Model Weight K-Nearest Neighbor (WKNN) digunakan untuk melakukan analisis sentimen pada ulasan rumah makan. 
+            Dalam pelatihan model ini, dilakukan seleksi fitur menggunakan Information Gain, dan model dioptimalkan dengan 
+            menguji berbagai kombinasi parameter seperti jumlah tetangga terdekat (n_neighbors), bobot (weights), dan 
+            metrik (metric).
+        """)
+
+        # Membaca data yang sudah diproses dari file Excel
+        df = pd.read_excel("hasil_preprocessing.xlsx")
+        X = df.drop(columns=["Label"])  # X adalah fitur, Label adalah target
+        y = df["Label"]
+
+        # Melakukan training menggunakan fungsi model_training yang telah dibuat
+        accuracy, best_model, best_param_set, elapsed_time = model_training(X, y, n_neighbors_options, weights_options, metric_options)
+
+        # Menampilkan hasil terbaik
+        st.write(f"**Akurasi Terbaik:** {accuracy:.4f}")
+        st.write(f"**Waktu Pelatihan Terbaik:** {elapsed_time:.2f} detik")
+        st.write(f"**Parameter Terbaik:** {best_param_set}")
         
-        # Memisahkan fitur dan label
-        df = load_data()
-        X = df.drop(columns=['Label'])  # Fitur (TF-IDF values)
-        y = df['Label']  # Label
+        # Menyimpan model terbaik
+        joblib.dump(best_model, 'best_knn_model.pkl')
+        st.write("Model terbaik telah disimpan dengan nama 'best_knn_model.pkl'")
+
+        # Menampilkan grafik confusion matrix
+        y_pred = best_model.predict(X)
+        cm = confusion_matrix(y, y_pred)
         
-        def feature_selection(X, y, percentage):
-            num_features_to_select = int(percentage / 100 * X.shape[1])
-            selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
-            X_selected = selector.fit_transform(X, y)
-            selected_feature_indices = selector.get_support(indices=True)
-            X_selected_df = X.iloc[:, selected_feature_indices]
-            feature_scores = selector.scores_
-            feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns, columns=[f'Rank_{percentage}%'])
-            return X_selected_df, feature_rankings
-        
-        def model_training(X, y, n_neighbors_options, weights_options, metric_options):
-            # Membagi data latih dan uji
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
-            # Variabel untuk menyimpan performa terbaik
-            best_accuracy = 0
-            best_model = None
-            best_param_set = {}
-            elapsed_time = 0
-        
-            # Coba semua kombinasi hyperparameter
-            for n_neighbors in n_neighbors_options:
-                for weights in weights_options:
-                    for metric in metric_options:
-                        start_time = time.time()
-        
-                        # Inisialisasi dan latih model KNN
-                        knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, metric=metric)
-                        knn_model.fit(X_train, y_train)
-        
-                        # Hitung akurasi pada data uji
-                        accuracy = knn_model.score(X_test, y_test)
-                        end_time = time.time()
-                        elapsed_time = end_time - start_time
-        
-                        # Simpan model terbaik jika akurasi meningkat
-                        if accuracy > best_accuracy:
-                            best_accuracy = accuracy
-                            best_model = knn_model
-                            best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
-        
-                        print(f"Params: n_neighbors={n_neighbors}, weights={weights}, metric={metric} | Accuracy: {accuracy:.4f} | Time: {elapsed_time:.2f} seconds")
-        
-            # Menghitung laporan klasifikasi dan confusion matrix menggunakan model terbaik
-            y_pred = best_model.predict(X_test)
-            class_report = classification_report(y_test, y_pred)
-            print("Classification Report:\n", class_report)
-        
-            # Plot Confusion Matrix
-            cm = confusion_matrix(y_test, y_pred)
-            plt.figure(figsize=(8, 6))
-            sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=best_model.classes_, yticklabels=best_model.classes_)
-            plt.xlabel("Predicted Labels")
-            plt.ylabel("True Labels")
-            plt.title("Confusion Matrix")
-            plt.show()
-        
-            # Simpan model terbaik
-            joblib.dump(best_model, 'best_knn_model.pkl')
-        
-            return best_accuracy, best_model, best_param_set, elapsed_time
-        
-        # Parameter seleksi fitur dan modeling
-        initial_percentage = 95
-        max_percentage = 60
-        step_percentage = -5
-        n_neighbors_options = [3, 5, 7, 9]
-        weights_options = ['distance']
-        metric_options = ['euclidean', 'manhattan']
-        
-        # Inisialisasi list untuk hasil dan DataFrame untuk peringkat fitur
-        percentages = []
-        accuracies = []
-        elapsed_times = []
-        best_models = []
-        best_params = []
-        feature_rankings_df = pd.DataFrame()
-        
-        # Random Over-sampling untuk dataset
-        ros = RandomOverSampler(random_state=42)
-        X_resampled, y_resampled = ros.fit_resample(X, y)
-        
-        # Loop untuk seleksi fitur dan training model
-        for percentage in range(initial_percentage, max_percentage + 1, step_percentage):
-            # Seleksi fitur
-            X_selected, feature_rankings = feature_selection(X_resampled, y_resampled, percentage)
-        
-            # Simpan peringkat fitur
-            feature_rankings_df = pd.concat([feature_rankings_df, feature_rankings], axis=1)
-        
-            # Latih model
-            accuracy, best_model, best_param_set, elapsed_time = model_training(
-                X_selected, y_resampled, n_neighbors_options, weights_options, metric_options)
-        
-            # Simpan hasil terbaik
-            percentages.append(percentage)
-            accuracies.append(accuracy)
-            elapsed_times.append(elapsed_time)
-            best_models.append(best_model)
-            best_params.append(best_param_set)
-        
-            # Simpan model untuk setiap persentase fitur
-            model_filename = f'best_knn_model_{percentage}percent.pkl'
-            joblib.dump(best_model, model_filename)
-            print(f"Model saved as: {model_filename}")
-            print(f"Best Params for {percentage}% features: {best_param_set}")
-            print(f"Best Accuracy on Test Data: {accuracy:.4f}")
-            print(f"Total Elapsed Time for Best Model: {elapsed_time:.2f} seconds")
-        
-        # Buat DataFrame untuk menyimpan hasil pelatihan
+        fig, ax = plt.subplots(figsize=(8, 6))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=best_model.classes_, yticklabels=best_model.classes_)
+        ax.set_xlabel('Predicted Labels')
+        ax.set_ylabel('True Labels')
+        ax.set_title('Confusion Matrix')
+        st.pyplot(fig)
+
+        # Menampilkan laporan klasifikasi
+        class_report = classification_report(y, y_pred)
+        st.write("**Laporan Klasifikasi:**")
+        st.text(class_report)
+
+        # Menyimpan hasil pelatihan dalam file Excel
         results_df = pd.DataFrame({
-            'Percentage': percentages,
-            'Accuracy': accuracies,
-            'Elapsed Time (s)': elapsed_times,
-            'Best Parameters': best_params
+            'Akurasi': [accuracy],
+            'Waktu Pelatihan (detik)': [elapsed_time],
+            'Parameter Terbaik': [best_param_set]
         })
-        
-        # Menampilkan hasil di Streamlit
-        st.title("Model Training Results")
-        st.write("Training results:")
-        st.dataframe(results_df)
-        
-        # Menyimpan hasil pelatihan ke file Excel
-        results_df.to_excel('training_results.xlsx', index=False)
-        st.write("Training results saved as 'training_results.xlsx'")
-        
-        # Simpan peringkat fitur dalam file yang sama dengan sheet terpisah
-        with pd.ExcelWriter('training_results_with_rankings.xlsx') as writer:
-            results_df.to_excel(writer, sheet_name='Training Results', index=False)
-            feature_rankings_df.to_excel(writer, sheet_name='Feature Rankings', index=True)
-        st.write("Training results and feature rankings saved in 'training_results_with_rankings.xlsx'")
+
+        results_df.to_excel('training_results_wknn.xlsx', index=False)
+        st.write("Hasil pelatihan telah disimpan dalam 'training_results_wknn.xlsx'")
         
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

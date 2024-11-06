@@ -174,8 +174,8 @@ with st.container():
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword']])
         
         def tokenizer(text):
-        text = text.lower()
-        return word_tokenize(text)
+            text = text.lower()
+            return word_tokenize(text)
     
         # Menerapkan fungsi tokenizing
         df['Tokenizing'] = df['slangword'].apply(tokenizer)

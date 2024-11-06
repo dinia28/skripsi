@@ -226,28 +226,32 @@ with st.container():
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal', 'Stemming', 'Full_Text_Stemmed']])
 
     elif selected == "TF-IDF": 
-        # Ambil data yang sudah melalui proses Stemming dan labelnya
-        df = df[['Full_Text_Stemmed', 'Label']]
+        # Cek apakah df sudah terdefinisi dengan benar
+        st.write(df.head())  # Pastikan df ada dan berisi data yang benar
         
-        # Menggunakan TfidfVectorizer untuk menghitung TF-IDF dari kolom teks
-        vectorizer = TfidfVectorizer()
-        tfidf_matrix = vectorizer.fit_transform(df['Full_Text_Stemmed'].values.astype('U'))
+        # Mengisi nilai NaN dengan string kosong untuk Full_Text_Stemmed
+        df['Full_Text_Stemmed'] = df['Full_Text_Stemmed'].fillna('')
         
-        # Melihat daftar kata-kata unik yang digunakan sebagai fitur dalam perhitungan TF-IDF
-        feature_names = vectorizer.get_feature_names_out()
+        # Pastikan kolom Full_Text_Stemmed ada di df
+        if 'Full_Text_Stemmed' in df.columns:
+            # Menggunakan TfidfVectorizer untuk menghitung TF-IDF dari kolom teks
+            vectorizer = TfidfVectorizer()
+            tfidf_matrix = vectorizer.fit_transform(df['Full_Text_Stemmed'].values.astype('U'))
         
-        # Mengonversi matriks TF-IDF ke dalam bentuk DataFrame
-        tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
+            # Melihat daftar kata-kata unik yang digunakan sebagai fitur dalam perhitungan TF-IDF
+            feature_names = vectorizer.get_feature_names_out()
         
-        # Menambahkan kolom label ke dalam DataFrame hasil TF-IDF
-        tfidf_df['Label'] = df['Label']
+            # Mengonversi matriks TF-IDF ke dalam bentuk DataFrame
+            tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
         
-        # Mencetak hasil TF-IDF
-        st.write("TF-IDF Matrix:")
-        st.dataframe(tfidf_df)
+            # Menambahkan kolom label ke dalam DataFrame hasil TF-IDF
+            tfidf_df['Label'] = df['Label']
         
-        # Jika ingin menyimpan model TF-IDF untuk digunakan di masa depan, gunakan joblib
-        # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
+            # Mencetak hasil TF-IDF
+            st.write("TF-IDF Matrix:")
+            st.dataframe(tfidf_df)
+        else:
+            st.error("Kolom 'Full_Text_Stemmed' tidak ditemukan!")
         
     elif selected == "Next Day":   
         st.subheader("PM10")       

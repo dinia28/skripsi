@@ -268,75 +268,52 @@ with st.container():
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
     
     elif selected == "Model WKNN":
-        # Menampilkan deskripsi tentang Model WKNN
-        st.write("""
-            Model Weight K-Nearest Neighbor (WKNN) digunakan untuk melakukan analisis sentimen pada ulasan rumah makan. 
-            Dalam pelatihan model ini, dilakukan seleksi fitur menggunakan Information Gain, dan model dioptimalkan dengan 
-            menguji berbagai kombinasi parameter seperti jumlah tetangga terdekat (n_neighbors), bobot (weights), dan 
-            metrik (metric).
-        """)
-
-        # Membaca data yang sudah diproses dari file Excel
-        df = pd.read_excel("hasil_preprocessing.xlsx")
-        X = df.drop(columns=["Label"])  # X adalah fitur, Label adalah target
-        y = df["Label"]
-
-        # Melakukan training menggunakan fungsi model_training yang telah dibuat
-        def model_training(X, y, n_neighbors_options, weights_options, metric_options):
-            param_grid = {
-                'n_neighbors': n_neighbors_options,
-                'weights': weights_options,
-                'metric': metric_options
-            }
+        # Upload Data Preprocessed TF-IDF
+        df = pd.read_excel("hasil_tfidf.xlsx")
+        X = df.drop(columns=['Label'])  # Fitur (nilai TF-IDF)
+        y = df['Label']  # Variabel target (Label)
+    
+        # Opsi Hyperparameter
+        n_neighbors_options = [3, 5, 7, 9]
+        weights_options = ['uniform', 'distance']
+        metric_options = ['euclidean', 'manhattan']
+    
+        # Pengguna memilih parameter
+        n_neighbors = st.selectbox("Pilih jumlah neighbors", n_neighbors_options)
+        weights = st.selectbox("Pilih fungsi bobot", weights_options)
+        metric = st.selectbox("Pilih metrik jarak", metric_options)
+    
+        # Tombol untuk melatih model
+        if st.button('Latih Model'):
+            # Latih model
+            accuracy, best_model, best_param_set, elapsed_time = model_training(X, y, [n_neighbors], [weights], [metric])
+    
+            # Tampilkan Hasil
+            st.write(f"Akurasinya terbaik: {accuracy:.4f}")
+            st.write(f"Parameter model terbaik: {best_param_set}")
+            st.write(f"Waktu yang dibutuhkan: {elapsed_time:.2f} detik")
+    
+            # Matriks Kebingungannya
+            y_pred = best_model.predict(X)
+            cm = confusion_matrix(y, y_pred)
+            fig, ax = plt.subplots(figsize=(8, 6))
+            sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=best_model.classes_, yticklabels=best_model.classes_)
+            plt.xlabel("Label Prediksi")
+            plt.ylabel("Label Asli")
+            plt.title("Matriks Kebingungannya")
+            st.pyplot(fig)
+    
+            # Simpan model terbaik
+            joblib.dump(best_model, 'best_knn_model.pkl')
+            st.success("Model telah disimpan sebagai 'best_knn_model.pkl'")
+    
+        # Opsi Memuat Model
+        if st.button("Muat Model yang Ada"):
+            if os.path.exists('best_knn_model.pkl'):
+                best_model = joblib.load('best_knn_model.pkl')
+                st.success("Model berhasil dimuat!")
+            else:
+                st.error("Model yang disimpan tidak ditemukan.")
             
-            model = KNeighborsClassifier()
-            
-            grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, n_jobs=-1)
-            
-            start_time = time()
-            grid_search.fit(X, y)
-            elapsed_time = time() - start_time
-            
-            best_model = grid_search.best_estimator_
-            best_param_set = grid_search.best_params_
-            accuracy = grid_search.best_score_
-            
-            return accuracy, best_model, best_param_set, elapsed_time
-
-        # Menampilkan hasil terbaik
-        st.write(f"**Akurasi Terbaik:** {accuracy:.4f}")
-        st.write(f"**Waktu Pelatihan Terbaik:** {elapsed_time:.2f} detik")
-        st.write(f"**Parameter Terbaik:** {best_param_set}")
-        
-        # Menyimpan model terbaik
-        joblib.dump(best_model, 'best_knn_model.pkl')
-        st.write("Model terbaik telah disimpan dengan nama 'best_knn_model.pkl'")
-
-        # Menampilkan grafik confusion matrix
-        y_pred = best_model.predict(X)
-        cm = confusion_matrix(y, y_pred)
-        
-        fig, ax = plt.subplots(figsize=(8, 6))
-        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=best_model.classes_, yticklabels=best_model.classes_)
-        ax.set_xlabel('Predicted Labels')
-        ax.set_ylabel('True Labels')
-        ax.set_title('Confusion Matrix')
-        st.pyplot(fig)
-
-        # Menampilkan laporan klasifikasi
-        class_report = classification_report(y, y_pred)
-        st.write("**Laporan Klasifikasi:**")
-        st.text(class_report)
-
-        # Menyimpan hasil pelatihan dalam file Excel
-        results_df = pd.DataFrame({
-            'Akurasi': [accuracy],
-            'Waktu Pelatihan (detik)': [elapsed_time],
-            'Parameter Terbaik': [best_param_set]
-        })
-
-        results_df.to_excel('training_results_wknn.xlsx', index=False)
-        st.write("Hasil pelatihan telah disimpan dalam 'training_results_wknn.xlsx'")
-        
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

@@ -257,57 +257,76 @@ with st.container():
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
-        # Menampilkan judul dan subjudul
-        st.title("Seleksi Fitur dengan Information Gain")
-        st.subheader("Menghitung dan Menampilkan Fitur Teratas berdasarkan Information Gain")
+        # Fungsi untuk seleksi fitur menggunakan persentase dengan Information Gain
+        def feature_selection(X, y, percentage):
+            # Menghitung jumlah fitur yang akan dipilih berdasarkan persentase
+            num_features_to_select = int(percentage / 100 * X.shape[1])
+            
+            # Inisialisasi SelectKBest dengan mutual_info_classif sebagai skor seleksi
+            selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
+            
+            # Memilih fitur berdasarkan informasi gain
+            X_selected = selector.fit_transform(X, y)
+            
+            # Mendapatkan indeks fitur yang terpilih
+            selected_feature_indices = selector.get_support(indices=True)
+            
+            # DataFrame fitur yang terpilih
+            X_selected_df = X.iloc[:, selected_feature_indices]
+            
+            # Menyimpan skor dari setiap fitur
+            feature_scores = selector.scores_
+            
+            # Membuat DataFrame untuk menyimpan ranking fitur berdasarkan skor
+            feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns, columns=[f'Rank_{percentage}%'])
+            
+            return X_selected_df, feature_rankings
         
-        # Memuat dataset yang sudah diproses
-        try:
+        # Proses utama TF-IDF dan Information Gain
+        def main():
+            # Memuat data dari file hasil preprocessing
             df = pd.read_excel("hasil_preprocessing.xlsx")
-            df.columns = df.columns.str.strip()  # Menghapus spasi ekstra pada nama kolom
-            labels = df['Label']
-            st.write("Data berhasil dimuat dari 'hasil_preprocessing.xlsx'.")
-        except Exception as e:
-            st.error(f"Gagal memuat 'hasil_preprocessing.xlsx'. Error: {e}")
+            
+            # Asumsi kolom 'Full_Text_Stemmed' adalah teks yang sudah diproses untuk TF-IDF
+            df_tfidf = df[['Full_Text_Stemmed', 'Label']]
+            
+            # Inisialisasi TfidfVectorizer
+            vectorizer = TfidfVectorizer()
+            
+            # Mengonversi kolom teks menjadi matriks TF-IDF
+            tfidf_matrix = vectorizer.fit_transform(df_tfidf['Full_Text_Stemmed'].values.astype('U'))
+            
+            # Mendapatkan nama fitur (kata) yang sesuai dengan nilai TF-IDF
+            feature_names = vectorizer.get_feature_names_out()
+            
+            # Mengonversi matriks TF-IDF menjadi DataFrame
+            tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
+            
+            # Menambahkan kolom 'Label' ke DataFrame
+            tfidf_df['Label'] = df_tfidf['Label']
+            
+            # Memisahkan fitur (X) dan label (y)
+            X = tfidf_df.drop(columns=['Label'])
+            y = tfidf_df['Label']
+            
+            # Persentase fitur yang ingin dipilih (misal 20%)
+            percentage = 20
+            
+            # Memanggil fungsi feature_selection
+            X_selected_df, feature_rankings = feature_selection(X, y, percentage)
+            
+            # Menampilkan hasil seleksi fitur
+            st.subheader("Hasil Seleksi Fitur (TF-IDF dan Information Gain)")
+            st.dataframe(X_selected_df)  # Menampilkan fitur yang terpilih
+            st.dataframe(feature_rankings)  # Menampilkan ranking fitur berdasarkan skor IG
         
-        # Memuat data TF-IDF dari file Excel
-        try:
-            tfidf_data = pd.read_excel("hasil_tfidf.xlsx")
-            X = tfidf_data
-            st.write("Data TF-IDF berhasil dimuat dari 'hasil_tfidf.xlsx'.")
-        except Exception as e:
-            st.error(f"Gagal memuat 'hasil_tfidf.xlsx'. Error: {e}")
+            # Opsional: Menyimpan hasil seleksi fitur ke file Excel
+            X_selected_df.to_excel("selected_features.xlsx", index=False)
+            feature_rankings.to_excel("feature_rankings.xlsx", index=True)
         
-        # Menghitung Information Gain
-        try:
-            information_gain = mutual_info_classif(X, labels)
-            ig_df = pd.DataFrame({'term': X.columns, 'information_gain': information_gain})
-            ig_df_sorted = ig_df.sort_values(by='information_gain', ascending=False)
-            total_rows = len(ig_df_sorted)
-        
-            # Fungsi untuk mendapatkan fitur teratas berdasarkan persentase
-            def get_top_percentage(percentage, df_sorted, total_rows):
-                num_rows = int(percentage * total_rows)
-                df_top = df_sorted.head(num_rows).copy()
-                df_top.reset_index(drop=True, inplace=True)
-                return df_top
-        
-            # Mendapatkan top berdasarkan persentase
-            top_95 = get_top_percentage(0.95, ig_df_sorted, total_rows)
-            top_90 = get_top_percentage(0.90, ig_df_sorted, total_rows)
-        
-            # Menggabungkan hasil ke dalam DataFrame secara horizontal
-            combined_df = pd.DataFrame()
-            combined_df['Fitur'] = ig_df_sorted['term']
-            combined_df['Rank_95%'] = top_95['information_gain'].reindex(combined_df.index, fill_value=0)
-            combined_df['Rank_90%'] = top_90['information_gain'].reindex(combined_df.index, fill_value=0)
-        
-            # Menampilkan DataFrame hasil seleksi fitur dengan format yang lebih rapi
-            st.write("Hasil Seleksi Fitur dengan Information Gain")
-            st.dataframe(combined_df.style.format(precision=4).set_caption("SELEKSI FITUR INFORMATION GAIN"))
-        except Exception as e:
-            st.error(f"Gagal menghitung Information Gain. Error: {e}")
-                
+        # Memanggil fungsi main jika dijalankan langsung
+        if __name__ == "__main__":
+            main()
 # Menampilkan penanda
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

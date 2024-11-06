@@ -46,7 +46,7 @@ with st.container():
     with st.sidebar:
         selected = option_menu(
             st.write(
-                """<h2 style = "text-align: center;"><img src="https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.jpeg" width="130" height="130"><br></h2>""",
+                """<h2 style = "text-align: center;"><img src="https://raw.githubusercontent.com/shintaputrii/skripsi/main/udara.png" width="130" height="130"><br></h2>""",
                 unsafe_allow_html=True,
             ),
             [
@@ -84,7 +84,7 @@ with st.container():
     if selected == "Home":
         st.write(
             """<h3 style = "text-align: center;">
-        <img src="https://raw.githubusercontent.com/shintaputrii/skripsi/main/udara.jpeg" width="500" height="300">
+        <img src="https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.jpeg" width="500" height="300">
         </h3>""",
             unsafe_allow_html=True,
         )

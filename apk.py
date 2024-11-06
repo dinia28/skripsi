@@ -175,7 +175,7 @@ with st.container():
         
         def tokenizer(text):
             text = text.lower()
-                return word_tokenize(text)
+            return word_tokenize(text)
     
         # Menerapkan fungsi tokenizing
         df['Tokenizing'] = df['slangword'].apply(tokenizer)

@@ -267,39 +267,44 @@ with st.container():
         
         # Fungsi untuk seleksi fitur
         def feature_selection(X, y, percentage):
-            # Menghitung jumlah fitur yang akan dipilih berdasarkan persentase yang diberikan
-            num_features_to_select = int(percentage / 100 * X.shape[1])
-            
-            # Menggunakan SelectKBest dengan mutual_info_classif
-            selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
-            
-            # Melakukan fit dan transformasi pada fitur
-            X_selected = selector.fit_transform(X, y)
-            
-            # Mendapatkan indeks fitur yang dipilih
-            selected_feature_indices = selector.get_support(indices=True)
-            
-            # Membuat DataFrame dengan fitur yang dipilih
-            X_selected_df = X.iloc[:, selected_feature_indices]
-            
-            # Mendapatkan skor fitur
-            feature_scores = selector.scores_
-            
-            # Merangking fitur berdasarkan skor
-            feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns, columns=[f'Rank_{percentage}%'])
-            
-            return X_selected_df, feature_rankings
+        # Menghitung jumlah fitur yang akan dipilih berdasarkan persentase yang diberikan
+        num_features_to_select = int(percentage / 100 * X.shape[1])
+        
+        # Menggunakan SelectKBest dengan mutual_info_classif
+        selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
+        
+        # Melakukan fit dan transformasi pada fitur
+        X_selected = selector.fit_transform(X, y)
+        
+        # Mendapatkan indeks fitur yang dipilih
+        selected_feature_indices = selector.get_support(indices=True)
+        
+        # Membuat DataFrame dengan fitur yang dipilih
+        X_selected_df = X.iloc[:, selected_feature_indices]
+        
+        # Mendapatkan skor fitur
+        feature_scores = selector.scores_
+        
+        # Merangking fitur berdasarkan skor
+        feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns, columns=[f'Rank_{percentage}%'])
+        
+        return X_selected_df, feature_rankings
+
+    # Menampilkan UI Streamlit
+    st.title("Seleksi Fitur TF-IDF")
     
-            # Contoh penggunaan:
-            percentage = 10  # Memilih 10% fitur teratas
-            X_selected_df, feature_rankings = feature_selection(X, y, percentage)
-            
-            # Menampilkan fitur yang dipilih dan peringkatnya
-            st.subheader(f"Top {percentage}% Fitur Terpilih")
-            st.dataframe(X_selected_df)
-            
-            st.subheader("Peringkat Fitur")
-            st.dataframe(feature_rankings)
+    # Pilihan persentase fitur yang akan dipilih
+    percentage = st.slider("Pilih Persentase Fitur yang Akan Dipilih", 1, 100, 10)  # default 10%
+    
+    # Memanggil fungsi seleksi fitur
+    X_selected_df, feature_rankings = feature_selection(X, y, percentage)
+    
+    # Menampilkan hasil
+    st.subheader(f"Top {percentage}% Fitur Terpilih")
+    st.dataframe(X_selected_df)
+    
+    st.subheader("Peringkat Fitur")
+    st.dataframe(feature_rankings)
 
     # Menampilkan penanda
     st.markdown("---")  # Menambahkan garis pemisah

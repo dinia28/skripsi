@@ -1,7 +1,5 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-import nltk
-nltk.download('punkt', quiet=True)
 import pandas as pd
 import numpy as np
 from numpy import array
@@ -174,15 +172,13 @@ with st.container():
         # Tampilkan hasil akhir setelah normalisasi slang words
         st.write("Hasil Normalisasi Slang Words:")
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword']])
-        
-        from nltk.tokenize import word_tokenize
-        import nltk
+
+        # Menggunakan fungsi tokenizer sederhana
+        df['Tokenizing'] = df['slangword'].apply(simple_tokenizer)
 
         # Unduh komponen punkt jika belum tersedia
-        nltk.download('punkt')
-        def tokenizer(text):
-            text = text.lower()
-            return word_tokenize(text)
+        def simple_tokenizer(text):
+            return text.split()  # Membagi berdasarkan spasi
     
         # Menerapkan fungsi tokenizing
         df['Tokenizing'] = df['slangword'].apply(tokenizer)

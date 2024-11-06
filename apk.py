@@ -229,10 +229,6 @@ with st.container():
         # Load the dataset from 'hasil_preprocessing.xlsx'
         df = pd.read_excel("hasil_preprocessing.xlsx")
         
-        # Display the data
-        st.subheader("Dataset")
-        st.dataframe(df)
-        
         # Assume 'Full_Text_Stemmed' is the column with the processed text for TF-IDF
         # Create a new DataFrame for TF-IDF
         df_tfidf = df[['Full_Text_Stemmed', 'Label']]

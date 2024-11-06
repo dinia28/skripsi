@@ -227,7 +227,7 @@ with st.container():
 
     elif selected == "TF-IDF": 
         # Memilih hanya kolom yang relevan untuk TF-IDF: 'Full_Text_Stemmed' dan 'Label'
-        df_tfidf = df[['Full_Text_Stemmed', 'Label']]
+        data = df[['Full_Text_Stemmed', 'Label']]
         
         # Menggunakan TfidfVectorizer untuk menghitung TF-IDF dari kolom teks
         vectorizer = TfidfVectorizer()

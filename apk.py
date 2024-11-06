@@ -298,16 +298,16 @@ with st.container():
         # Input persentase seleksi fitur
         percentage = st.slider("Persentase Fitur yang Dipilih:", min_value=10, max_value=100, step=10, value=50)
 
-# Melakukan seleksi fitur berdasarkan persentase
-st.subheader(f"Seleksi Fitur Information Gain - {percentage}% Terbaik")
-X_selected_df, feature_rankings = feature_selection(X, y, percentage)
-
-# Menampilkan fitur yang terpilih dan peringkatnya
-st.write("Fitur yang Terpilih:")
-st.dataframe(X_selected_df)
-
-st.write("Peringkat Fitur Berdasarkan Information Gain:")
-st.dataframe(feature_rankings.sort_values(by=f'Rank_{percentage}%', ascending=False))
-# Menampilkan penanda
+        # Melakukan seleksi fitur berdasarkan persentase
+        st.subheader(f"Seleksi Fitur Information Gain - {percentage}% Terbaik")
+        X_selected_df, feature_rankings = feature_selection(X, y, percentage)
+        
+        # Menampilkan fitur yang terpilih dan peringkatnya
+        st.write("Fitur yang Terpilih:")
+        st.dataframe(X_selected_df)
+        
+        st.write("Peringkat Fitur Berdasarkan Information Gain:")
+        st.dataframe(feature_rankings.sort_values(by=f'Rank_{percentage}%', ascending=False))
+        # Menampilkan penanda
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

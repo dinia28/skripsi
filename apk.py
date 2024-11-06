@@ -20,6 +20,7 @@ import os
 import time
 import seaborn as sns
 os.system('pip install nltk')
+os.system('pip install imbalanced-learn')
 from nltk.stem import PorterStemmer
 
 

@@ -257,15 +257,23 @@ with st.container():
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
+       st.title("Analisis Sentimen Rumah Makan")
+
         # Menampilkan subheader untuk halaman Information Gain
         st.subheader("Hasil Information Gain")
         
         # Memuat data dari file hasil_ig.csv
         try:
-            hasil_ig_df = pd.read_csv("hasil_ig.csv")  # Ganti path jika file berada di lokasi berbeda
+            st.write("Memuat file hasil_ig.csv...")
+            hasil_ig_df = pd.read_csv("hasil_ig.csv")  # Sesuaikan path jika file berada di lokasi berbeda
             st.dataframe(hasil_ig_df)  # Menampilkan DataFrame di Streamlit
+            st.success("File berhasil dimuat dan ditampilkan.")
         except FileNotFoundError:
             st.error("File hasil_ig.csv tidak ditemukan. Pastikan file tersebut ada di direktori yang benar.")
+        except pd.errors.EmptyDataError:
+            st.error("File hasil_ig.csv kosong.")
+        except Exception as e:
+            st.error(f"Terjadi kesalahan: {e}")
         # Menampilkan penanda
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

@@ -268,7 +268,7 @@ with st.container():
         # Fungsi untuk seleksi fitur
         def feature_selection(X, y, percentage):
         # Menghitung jumlah fitur yang akan dipilih berdasarkan persentase yang diberikan
-        num_features_to_select = int(percentage / 100 * X.shape[1])
+            num_features_to_select = int(percentage / 100 * X.shape[1])
         
         # Menggunakan SelectKBest dengan mutual_info_classif
         selector = SelectKBest(mutual_info_classif, k=num_features_to_select)

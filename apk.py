@@ -283,8 +283,8 @@ with st.container():
         y = data['Label']
         
         # Slider untuk menentukan persentase fitur yang dipilih
-        percentage = st.slider("Pilih persentase fitur untuk diseleksi:", 65, 60, 75, 70, 85, 80, 95)
-        
+        percentage = st.slider("Pilih persentase fitur untuk diseleksi:", 65, 95, 70, 5)
+
         # Fungsi untuk seleksi fitur
         def feature_selection(X, y, percentage):
             num_features_to_select = int(percentage / 100 * X.shape[1])

@@ -205,6 +205,23 @@ with st.container():
         st.write("Data setelah stopword removal:")
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal']])
 
+        # Inisialisasi Porter Stemmer
+        stemmer = PorterStemmer()
+        
+        # Fungsi stemming
+        def stemText(words):
+            return [stemmer.stem(word) for word in words]
+        
+        # Menerapkan stemming pada kolom 'Stopword_Removal'
+        df['Stemming'] = df['Stopword_Removal'].apply(stemText)
+        
+        # Menggabungkan hasil stemming menjadi satu kalimat
+        df['Full_Text_Stemmed'] = df['Stemming'].apply(lambda x: ' '.join(x))
+        
+        # Menampilkan hasil akhir di Streamlit
+        st.write("Data setelah Stemming:")
+        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal', 'Stemming', 'Full_Text_Stemmed']])
+
     elif selected == "TF-IDF":
         # Your TF-IDF code goes here
 

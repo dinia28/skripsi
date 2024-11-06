@@ -261,34 +261,53 @@ with st.container():
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
-        # Memisahkan fitur dan label
-        X = tfidf_df.drop(columns=['Label'])  # Fitur (TF-IDF values)
-        y = tfidf_df['Label']  # Label
+        # Memuat data hasil preprocessing dari 'hasil_preprocessing.xlsx'
+        df = pd.read_excel("hasil_preprocessing.xlsx")
         
-        # Fungsi untuk seleksi fitur menggunakan SelectKBest
+        # Menampilkan data
+        st.subheader("Dataset")
+        st.dataframe(df)
+        
+        # Transformasi TF-IDF
+        st.subheader("Transformasi TF-IDF")
+        vectorizer = TfidfVectorizer()
+        tfidf_matrix = vectorizer.fit_transform(df['Full_Text_Stemmed'].values.astype('U'))
+        feature_names = vectorizer.get_feature_names_out()
+        tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
+        tfidf_df['Label'] = df['Label']
+        
+        # Menampilkan DataFrame hasil TF-IDF
+        st.write("Hasil TF-IDF:")
+        st.dataframe(tfidf_df)
+        
+        # Fungsi Seleksi Fitur dengan Information Gain
         def feature_selection(X, y, percentage):
             num_features_to_select = int(percentage / 100 * X.shape[1])
             selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
-            selector.fit(X, y)
+            X_selected = selector.fit_transform(X, y)
+            selected_feature_indices = selector.get_support(indices=True)
+            X_selected_df = X.iloc[:, selected_feature_indices]
             feature_scores = selector.scores_
-            return feature_scores
+            feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns, columns=[f'Rank_{percentage}%'])
+            return X_selected_df, feature_rankings
         
-        # Persentase yang ingin kita gunakan
-        percentages = [95, 90, 85, 80, 75, 70, 65]
+        # Memisahkan fitur dan label
+        X = tfidf_df.drop(columns=['Label'])  # Fitur TF-IDF
+        y = tfidf_df['Label']  # Label
         
-        # DataFrame untuk menyimpan ranking fitur berdasarkan persentase
-        feature_ranking_df = pd.DataFrame(index=X.columns)
-        feature_ranking_df.index.name = 'Fitur'
-        
-        # Menghitung Information Gain untuk setiap persentase dan menambahkannya ke DataFrame
-        for percentage in percentages:
-            scores = feature_selection(X, y, percentage)
-            feature_ranking_df[f'Rank_{percentage}%'] = scores
+        # Input persentase seleksi fitur
+        percentage = st.slider("Persentase Fitur yang Dipilih:", min_value=10, max_value=100, step=10, value=50)
 
-# Menampilkan tabel di Streamlit
-st.subheader("SELEKSI FITUR INFORMATION GAIN")
-st.write("DataFrame hasil seleksi fitur:", feature_ranking_df.shape)
-st.write(feature_ranking_df.head())
+# Melakukan seleksi fitur berdasarkan persentase
+st.subheader(f"Seleksi Fitur Information Gain - {percentage}% Terbaik")
+X_selected_df, feature_rankings = feature_selection(X, y, percentage)
+
+# Menampilkan fitur yang terpilih dan peringkatnya
+st.write("Fitur yang Terpilih:")
+st.dataframe(X_selected_df)
+
+st.write("Peringkat Fitur Berdasarkan Information Gain:")
+st.dataframe(feature_rankings.sort_values(by=f'Rank_{percentage}%', ascending=False))
 # Menampilkan penanda
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

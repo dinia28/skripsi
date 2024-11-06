@@ -259,7 +259,7 @@ with st.container():
         # Tampilkan semua kolom polutan dan kolom normalisasi mereka
         st.write(data[[f'{col}' for col in pollutants] + [f'{col}_normalized' for col in pollutants]])
 
-    elif selected == "Hasil MAPE":
+    elif selected == "TF-IDF":
         # Membaca dataset dari file Excel
         data = pd.read_excel(
             "https://raw.githubusercontent.com/shintaputrii/skripsi/main/kualitasudara.xlsx"

@@ -9,3 +9,4 @@ plotly
 openpyxl
 nltk
 spacy
+joblib==1.2.0

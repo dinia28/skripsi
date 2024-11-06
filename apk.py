@@ -15,8 +15,8 @@ import matplotlib.dates as mdates
 
 
 st.set_page_config(
-    page_title="Prediksi Kualitas Udara DKI Jakarta",
-    page_icon="https://raw.githubusercontent.com/shintaputrii/skripsi/main/house_1152964.png",
+    page_title="ANALISIS SENTIMEN RUMAH MAKAN MELALUI ULASAN GOOGLE MAPS MENGGUNAKAN METODE WEIGHT K-NEAREST NEIGHBOR DENGAN SELEKSI FITUR INFORMATION GAIN",
+    page_icon="",
     layout="centered",
     initial_sidebar_state="expanded",
     menu_items={
@@ -27,7 +27,7 @@ st.set_page_config(
 )
 
 st.write(
-    """<h1 style="font-size: 40px;">Prediksi Kualitas Udara di DKI Jakarta</h1>""",
+    """<h1 style="font-size: 40px;">Analisis Sentimen Rumah Makan</h1>""",
     unsafe_allow_html=True,
 )
 
@@ -42,8 +42,9 @@ with st.container():
                 "Home",
                 "Data",
                 "Preprocessing",
-                "Hasil MAPE",
-                "Next Day",
+                "TF-IDF",
+                "Information Gain",
+                "Model WKNN",
 
             ],
             icons=[
@@ -79,8 +80,7 @@ with st.container():
 
         st.subheader("""Deskripsi Aplikasi""")
         st.write(
-            """
-         Aplikasi Prediksi kualitas Udara di DKI Jakarta merupakan aplikasi yang digunakan untuk meramalkan 6 konsentrasi polutan udara di DKI Jakarta yang meliputi PM10, PM25, SO2, CO, NO2, dan O3 serta menentukan kategori untuk hari berikutnya..
+            """ Selamat Datang di hasil analisis sentimen menggunakan Weight K-Nearest Neighbor dengan seleksi fitur Information Gain.
         """
         )
 
@@ -89,41 +89,25 @@ with st.container():
         st.subheader("""Deskripsi Data""")
         st.write(
             """
-        Data yang digunakan dalam aplikasi ini yaitu data ISPU DKI Jakarta periode 1 Desember 2022 sampai 30 November 2023. Data yang ditampilkan adalah data ispu yang diperoleh per harinya. 
+        Data yang digunakan dalam aplikasi ini yaitu data hasil dari Scrapping ulasan pada Google Maps. Data yang didapat sejumlah 1.060 data.
         """
-        )
-
-        st.subheader("""Sumber Dataset""")
-        st.write(
-            """
-        Sumber data didapatkan dari website "Satu Data DKI Jakarta". Berikut merupakan link untuk mengakses sumber dataset.
-        <a href="https://satudata.jakarta.go.id/search?q=data%20ispu&halaman=all&kategori=all&topik=all&organisasi=all&status=all&sort=desc&page_no=1&show_filter=true&lang=id">Klik disini</a>""",
-            unsafe_allow_html=True,
         )
 
         st.subheader("""Dataset""")
         # Menggunakan file Excel dari GitHub
         df = pd.read_excel(
-            "https://raw.githubusercontent.com/shintaputrii/skripsi/main/kualitasudara.xlsx"
+            "https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.xlsx"
         )
         st.dataframe(df, width=600)
         
-        st.subheader("Penghapusan kolom")
-        # Membaca dataset dari file Excel
-        data = pd.read_excel(
-            "https://raw.githubusercontent.com/shintaputrii/skripsi/main/kualitasudara.xlsx"
         )
         
-        # Menghapus kolom yang tidak diinginkan
-        data = data.drop(['periode_data', 'stasiun', 'parameter_pencemar_kritis', 'max', 'kategori'], axis=1)
-        data.tanggal = pd.to_datetime(data.tanggal)
-        
-        # Menampilkan dataframe setelah penghapusan kolom
+        # Menampilkan jumlah label
         st.dataframe(data, width=600)
         
     elif selected == "Preprocessing":
         # MEAN IMPUTATION
-        st.subheader("""Mean Imputation""")
+        st.subheader("""Cleansing""")
         # Membaca dataset dari file Excel
         data = pd.read_excel(
             "https://raw.githubusercontent.com/shintaputrii/skripsi/main/kualitasudara.xlsx"

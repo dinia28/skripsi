@@ -16,9 +16,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import joblib
 import re
-import os
 import time
 import seaborn as sns
+import os
 os.system('pip install nltk')
 os.system('pip install imbalanced-learn')
 from nltk.stem import PorterStemmer

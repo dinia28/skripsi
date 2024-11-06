@@ -279,7 +279,7 @@ with st.container():
         st.subheader("Seleksi Fitur Berdasarkan Information Gain")
         
         # Memisahkan fitur dan label
-        X = X.values
+        X = X.to_numpy()
         y = pd.factorize(y)[0]
       
         # Slider untuk menentukan persentase fitur yang dipilih

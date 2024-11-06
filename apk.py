@@ -172,6 +172,7 @@ with st.container():
         # Tampilkan hasil akhir setelah normalisasi slang words
         st.write("Hasil Normalisasi Slang Words:")
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword']])
+        
         from nltk.tokenize import word_tokenize
         import nltk
 

@@ -46,7 +46,7 @@ with st.container():
     with st.sidebar:
         selected = option_menu(
             st.write(
-                """<h2 style = "text-align: center;"><img src="https://raw.githubusercontent.com/dinia28/skripsi/main/rumah.jpg" width="130" height="130"><br></h2>""",
+                """<h2 style = "text-align: center;"><img src="https://raw.githubusercontent.com/dinia28/skripsi/main/home.png" width="130" height="130"><br></h2>""",
                 unsafe_allow_html=True,
             ),
             [

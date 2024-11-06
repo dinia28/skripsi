@@ -287,7 +287,8 @@ with st.container():
 
 # Menampilkan tabel di Streamlit
 st.subheader("SELEKSI FITUR INFORMATION GAIN")
-st.dataframe(feature_ranking_df)
+st.write("DataFrame hasil seleksi fitur:", feature_ranking_df.shape)
+st.write(feature_ranking_df.head())
 # Menampilkan penanda
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

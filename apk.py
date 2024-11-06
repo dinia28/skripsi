@@ -269,6 +269,11 @@ with st.container():
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
             
     elif selected == "Model WKNN":
+        # Fungsi untuk memuat model terbaik
+        def load_best_model(filename):
+            return joblib.load(filename)
+        
+        # Fungsi untuk plotting confusion matrix
         def plot_confusion_matrix(y_true, y_pred, classes):
             cm = confusion_matrix(y_true, y_pred)
             plt.figure(figsize=(8, 6))
@@ -278,9 +283,7 @@ with st.container():
             plt.title("Confusion Matrix")
             st.pyplot()
         
-        def load_best_model(filename):
-            return joblib.load(filename)
-        
+        # Fungsi untuk menampilkan grafik akurasi
         def display_accuracy_graph():
             results_df = pd.read_excel('training_results.xlsx')
             plt.figure(figsize=(10, 6))
@@ -293,9 +296,10 @@ with st.container():
             plt.legend()
             st.pyplot()
         
+        # Fungsi utama untuk aplikasi Streamlit
         def main():
             st.title("Sentiment Analysis with KNN")
-            
+        
             model_options = ['Model terbaik 95%', 'Model terbaik 90%', 'Model terbaik 85%', 'Model terbaik 80%', 'Model terbaik 75%', 'Model terbaik 70%', 'Model terbaik 65%', 'Model terbaik 60%']
             model_choice = st.selectbox("Pilih Model", model_options)
         
@@ -307,9 +311,11 @@ with st.container():
                 st.error("Model yang dipilih tidak ditemukan.")
                 return
         
+            # Menampilkan grafik akurasi
             st.subheader("Grafik Akurasi vs Persentase Fitur")
             display_accuracy_graph()
         
+            # Input data untuk prediksi
             st.subheader("Masukkan Data Uji untuk Prediksi")
             user_input = st.text_area("Masukkan teks untuk dianalisis:", "")
         

@@ -158,7 +158,7 @@ with st.container():
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding']])
         
         # Membaca file slang words
-        slangword_normalisasi = pd.read_csv("combined_slang_words.csv")
+        slangword_normalisasi = pd.read_csv("normalisasi.csv")
         
         # Membuat kamus slang words untuk normalisasi
         kata_normalisasi_dict = {row[0]: row[1] for _, row in slangword_normalisasi.iterrows()}

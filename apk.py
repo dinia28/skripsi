@@ -111,12 +111,12 @@ with st.container():
         # Cleansing
         st.subheader("Cleansing")
     
+        import re
+        import pandas as pd
+        
+        # Mendefinisikan fungsi cleaning
         def cleaning(text):
             try:
-                # Untuk debugging, menampilkan teks yang sedang dibersihkan
-                st.write(f"Cleaning text: {text}")
-                
-                # Proses pembersihan
                 text = re.sub(r'\$\w*', '', str(text))
                 text = re.sub(r'^rt[\s]+', '', str(text))
                 text = re.sub(r'((www\.[^\s]+)|(https?://[^\s]+))', ' ', str(text))
@@ -132,16 +132,24 @@ with st.container():
                 text = re.sub(r'^RT[\s]+', '', str(text))
                 text = re.sub(r'^b[\s]+', '', str(text))
                 text = re.sub(r'^link[\s]+', '', str(text))
-                
                 return text
             except Exception as e:
                 st.write(f"Error cleaning text: {e}")
                 return text
-    
-        # Menerapkan fungsi cleaning pada kolom 'Ulasan'
+        
+        # Mengambil data dari file Excel
+        df = pd.read_excel("https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.xlsx")
+        # Cek kolom dan isi untuk memastikan kolom 'Ulasan' ada
+        st.write("Kolom dalam df:", df.columns)
+        st.write("Data contoh sebelum cleaning:", df['Ulasan'].head())
+        
+        # Mengisi nilai NaN dengan string kosong untuk kolom 'Ulasan'
+        df['Ulasan'] = df['Ulasan'].fillna("")
+        
+        # Menerapkan fungsi cleaning
         df['Cleaning'] = df['Ulasan'].apply(cleaning)
         st.write("Hasil Cleansing:")
-        st.dataframe(df[['Ulasan', 'Cleaning']], width=600)
+        st.dataframe(df[['Ulasan', 'Cleaning']])
 
 
     elif selected == "TF-IDF":

@@ -135,6 +135,7 @@ with st.container():
             except Exception as e:
                 st.write(f"Error cleaning text: {e}")
                 return text
+                st.write(df_subset)  # Ini seharusnya muncul langsung jika berada di blok utama
 
 
     elif selected == "TF-IDF":

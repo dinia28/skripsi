@@ -49,7 +49,7 @@ with st.container():
                 "Data",
                 "Preprocessing",
                 "TF-IDF",
-                "Informartion Gain",
+                "Information Gain",
                 "Model WKNN",
 
             ],
@@ -59,7 +59,7 @@ with st.container():
                 "gear",
                 "bar-chart",
                 "arrow-down-square",
-                 "file-earmark-font",
+                "file-earmark-font",
             ],
             menu_icon="cast",
             default_index=0,

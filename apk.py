@@ -2,17 +2,25 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import pandas as pd
 import numpy as np
-from numpy import array
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.metrics import mean_absolute_percentage_error
-from math import sqrt
-import plotly.graph_objects as go
+import json
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-
+import re
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import SnowballStemmer
+from nltk.stem import PorterStemmer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_selection import SelectKBest, mutual_info_classif
+from imblearn.over_sampling import RandomOverSampler
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+import seaborn as sns
+import time
+import joblib
 
 st.set_page_config(
     page_title="ANALISIS SENTIMEN RUMAH MAKAN MELALUI ULASAN GOOGLE MAPS MENGGUNAKAN METODE WEIGHT K-NEAREST NEIGHBOR DENGAN SELEKSI FITUR INFORMATION GAIN",
@@ -50,8 +58,8 @@ with st.container():
             icons=[
                 "house",
                 "file-earmark-font",
-                "bar-chart",
                 "gear",
+                "bar-chart",
                 "arrow-down-square",
                 "person",
             ],
@@ -71,11 +79,6 @@ with st.container():
         )
 
     if selected == "Home":
-        st.write(
-            """<h3 style = "text-align: center;">
-        <img src="https://raw.githubusercontent.com/shintaputrii/skripsi/main/udara.jpeg" width="500" height="300">
-        </h3>""",
-            unsafe_allow_html=True,
         )
 
         st.subheader("""Deskripsi Aplikasi""")
@@ -98,14 +101,13 @@ with st.container():
         df = pd.read_excel(
             "https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.xlsx"
         )
-        st.dataframe(df, width=600)
-        
         
         # Menampilkan jumlah label
+        data['Label'].value_counts()
         st.dataframe(data, width=600)
         
     elif selected == "Preprocessing":
-        # MEAN IMPUTATION
+        # Cleansing
         st.subheader("""Cleansing""")
         # Membaca dataset dari file Excel
         data = pd.read_excel(

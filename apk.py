@@ -145,10 +145,11 @@ with st.container():
             text = re.sub(r'^link[\s]+', '', str(text))
             return text
     
-        # Mengaplikasikan fungsi cleaning
-        df['Cleaning'] = df['Ulasan'].apply(cleaning)
-        st.write("Cleaning Result:")
-    
+        # Coba cleaning pada subset kecil
+        df_subset = df['Ulasan'].head(10)  # Ambil 10 baris pertama
+        cleaned_subset = df_subset.apply(cleaning)
+        st.write(cleaned_subset)
+
     elif selected == "TF-IDF":
         # Your TF-IDF code goes here
 

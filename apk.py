@@ -258,7 +258,6 @@ with st.container():
     
     elif selected == "Information gain":
         # Memuat DataFrame TF-IDF (ubah path sesuai dengan lokasi file kamu)
-        @st.cache
         def load_data():
             return pd.read_excel('hasil_preprocessing.xlsx')
         

@@ -1,5 +1,6 @@
 streamlit
 pandas
+imbalanced-learn
 scikit-learn
 scipy
 streamlit-option-menu

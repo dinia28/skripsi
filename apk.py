@@ -287,7 +287,7 @@ with st.container():
             
             # Merangking fitur berdasarkan skor
             feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns, columns=[f'Rank_{percentage}%'])
-        return X_selected_df, feature_rankings
+            return X_selected_df, feature_rankings
 
     # Menampilkan UI Streamlit
     st.title("Seleksi Fitur TF-IDF")

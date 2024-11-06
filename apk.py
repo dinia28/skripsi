@@ -5,9 +5,6 @@ import numpy as np
 import json
 import matplotlib.pyplot as plt
 import re
-import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer

@@ -295,9 +295,9 @@ with st.container():
         # Menampilkan fitur yang terpilih dan peringkatnya
         st.subheader("Fitur yang Terpilih:")
         st.dataframe(X_selected_df)
-        
         st.subheader("Peringkat Fitur Berdasarkan Information Gain:")
         st.dataframe(feature_rankings.sort_values(by=f'Rank_{percentage}%', ascending=False))
-        # Menampilkan penanda
+        
+# Menampilkan penanda
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

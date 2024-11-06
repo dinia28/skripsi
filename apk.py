@@ -261,15 +261,10 @@ with st.container():
         # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
     
     elif selected == "Information gain":
-        # Memuat data hasil preprocessing dari 'hasil_preprocessing.xlsx'
+        # Memuat data hasil preprocessing
         df = pd.read_excel("hasil_preprocessing.xlsx")
         
-        # Menampilkan data
-        st.subheader("Dataset")
-        st.dataframe(df)
-        
         # Transformasi TF-IDF
-        st.subheader("Transformasi TF-IDF")
         vectorizer = TfidfVectorizer()
         tfidf_matrix = vectorizer.fit_transform(df['Full_Text_Stemmed'].values.astype('U'))
         feature_names = vectorizer.get_feature_names_out()
@@ -277,7 +272,7 @@ with st.container():
         tfidf_df['Label'] = df['Label']
         
         # Menampilkan DataFrame hasil TF-IDF
-        st.write("Hasil TF-IDF:")
+        st.subheader("Hasil TF-IDF:")
         st.dataframe(tfidf_df)
         
         # Fungsi Seleksi Fitur dengan Information Gain
@@ -297,16 +292,15 @@ with st.container():
         
         # Input persentase seleksi fitur
         percentage = st.slider("Persentase Fitur yang Dipilih:", min_value=10, max_value=100, step=10, value=50)
-
+        
         # Melakukan seleksi fitur berdasarkan persentase
-        st.subheader(f"Seleksi Fitur Information Gain - {percentage}% Terbaik")
         X_selected_df, feature_rankings = feature_selection(X, y, percentage)
         
         # Menampilkan fitur yang terpilih dan peringkatnya
-        st.write("Fitur yang Terpilih:")
+        st.subheader("Fitur yang Terpilih:")
         st.dataframe(X_selected_df)
         
-        st.write("Peringkat Fitur Berdasarkan Information Gain:")
+        st.subheader("Peringkat Fitur Berdasarkan Information Gain:")
         st.dataframe(feature_rankings.sort_values(by=f'Rank_{percentage}%', ascending=False))
         # Menampilkan penanda
 st.markdown("---")  # Menambahkan garis pemisah

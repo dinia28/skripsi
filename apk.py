@@ -79,7 +79,6 @@ with st.container():
         )
 
     if selected == "Home":
-        )
 
         st.subheader("""Deskripsi Aplikasi""")
         st.write(

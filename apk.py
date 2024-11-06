@@ -226,7 +226,7 @@ with st.container():
 
     elif selected == "TF-IDF": 
         # Pastikan variabel data atau df sudah didefinisikan sebelumnya
-    try:
+        try:
         # Cek apakah 'Full_Text_Stemmed' ada di DataFrame
         if 'Full_Text_Stemmed' not in df.columns:
             df['Full_Text_Stemmed'] = ''

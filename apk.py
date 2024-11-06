@@ -111,10 +111,17 @@ with st.container():
         # Menampilkan frekuensi dari masing-masing label
         label_counts = df['Label'].value_counts()
         st.write(label_counts)
+       
+        st.subheader("IG")
+        # Menggunakan file Excel dari GitHub
+        df = pd.read_excel(
+            "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"
+        )
+        st.dataframe(df, width=600)
         
     elif selected == "Preprocessing":
         # Cleansing
-        st.subheader("Cleansing")
+        st.subheader("Preprocessing")
     
         import re
         import pandas as pd

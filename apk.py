@@ -328,8 +328,13 @@ with st.container():
         metric_options = ['euclidean', 'manhattan']
         
         # Dummy data untuk contoh
-        X, y = ...  # Pastikan data X, y sudah siap untuk digunakan
+        # Misalnya, data ada di file CSV
+        data = pd.read_csv('hasil_ig.csv')
         
+        # Pisahkan fitur (X) dan target label (y)
+        X = data.drop('target_column', axis=1)  # Misalnya target ada di kolom 'target_column'
+        y = data['target_column']  # Label target
+                
         ros = RandomOverSampler(random_state=42)
         X_resampled, y_resampled = ros.fit_resample(X, y)
         

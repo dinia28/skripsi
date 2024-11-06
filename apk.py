@@ -27,7 +27,7 @@ st.set_page_config(
 )
 
 st.write(
-    """<h1 style="font-size: 40px;">Prediksi Kualitas Udara di DKI Jakarta</h1>""",
+    """<h1 style="font-size: 40px;">Analisis Sentimen Rumah Makan</h1>""",
     unsafe_allow_html=True,
 )
 
@@ -41,18 +41,19 @@ with st.container():
             [
                 "Home",
                 "Data",
-                "Missing Value & Normalisasi",
-                "Hasil MAPE",
-                "Next Day",
+                "Preprocessing",
+                "TF-IDF",
+                "Informartion Gain",
+                "Model WKNN",
 
             ],
             icons=[
                 "house",
-                "file-earmark-font",
-                "bar-chart",
-                "gear",
-                "arrow-down-square",
                 "person",
+                "gear",
+                "bar-chart",
+                "arrow-down-square",
+                 "file-earmark-font",
             ],
             menu_icon="cast",
             default_index=0,
@@ -80,7 +81,7 @@ with st.container():
         st.subheader("""Deskripsi Aplikasi""")
         st.write(
             """
-         Aplikasi Prediksi kualitas Udara di DKI Jakarta merupakan aplikasi yang digunakan untuk meramalkan 6 konsentrasi polutan udara di DKI Jakarta yang meliputi PM10, PM25, SO2, CO, NO2, dan O3 serta menentukan kategori untuk hari berikutnya..
+        ANALISIS SENTIMEN RUMAH MAKAN MELALUI ULASAN GOOGLE MAPS MENGGUNAKAN METODE WEIGHT K-NEAREST NEIGHBOR DENGAN SELEKSI FITUR INFORMATION GAIN
         """
         )
 
@@ -89,29 +90,27 @@ with st.container():
         st.subheader("""Deskripsi Data""")
         st.write(
             """
-        Data yang digunakan dalam aplikasi ini yaitu data ISPU DKI Jakarta periode 1 Desember 2022 sampai 30 November 2023. Data yang ditampilkan adalah data ispu yang diperoleh per harinya. 
+        Data yang digunakan dalam aplikasi ini yaitu data dari hasil scrapping ulasan pada google maps
         """
         )
 
-        st.subheader("""Sumber Dataset""")
-        st.write(
-            """
-        Sumber data didapatkan dari website "Satu Data DKI Jakarta". Berikut merupakan link untuk mengakses sumber dataset.
-        <a href="https://satudata.jakarta.go.id/search?q=data%20ispu&halaman=all&kategori=all&topik=all&organisasi=all&status=all&sort=desc&page_no=1&show_filter=true&lang=id">Klik disini</a>""",
-            unsafe_allow_html=True,
         )
 
-        st.subheader("""Dataset""")
+        import streamlit as st
+        import pandas as pd
+        
+        st.subheader("Dataset")
         # Menggunakan file Excel dari GitHub
         df = pd.read_excel(
-            "https://raw.githubusercontent.com/shintaputrii/skripsi/main/kualitasudara.xlsx"
+            "https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.xlsx"
         )
         st.dataframe(df, width=600)
         
-        st.subheader("Penghapusan kolom")
-        # Membaca dataset dari file Excel
-        data = pd.read_excel(
-            "https://raw.githubusercontent.com/shintaputrii/skripsi/main/kualitasudara.xlsx"
+        st.subheader("Label")
+        # Menampilkan frekuensi dari masing-masing label
+        label_counts = df['Label'].value_counts()
+        st.write(label_counts)
+
         )
         
         # Menghapus kolom yang tidak diinginkan

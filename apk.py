@@ -13,6 +13,8 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import re
+import os
+os.system('pip install nltk')
 
 
 st.set_page_config(
@@ -172,6 +174,18 @@ with st.container():
         # Tampilkan hasil akhir setelah normalisasi slang words
         st.write("Hasil Normalisasi Slang Words:")
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword']])
+
+        # Tokenizing
+        def tokenizer(text):
+            text = text.lower()  # Pastikan teks lowercase
+            return word_tokenize(text)
+        
+        # Menerapkan tokenizing pada kolom 'slangword'
+        df['Tokenizing'] = df['slangword'].apply(tokenizer)
+        
+        # Tampilkan hasil akhir setelah tokenizing
+        st.write("Hasil Tokenizing:")
+        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing']])
 
 
     elif selected == "TF-IDF":

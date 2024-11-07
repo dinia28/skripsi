@@ -262,7 +262,7 @@ with st.container():
         response = requests.get(url)
         if response.status_code == 200:
             data = BytesIO(response.content)
-            df = pd.read_excel(data)
+            df = pd.read_csv(data)
             st.dataframe(df, width=600)
         else:
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")

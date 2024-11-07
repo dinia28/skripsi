@@ -258,7 +258,7 @@ with st.container():
         from io import BytesIO
         st.subheader("Information Gain")
         st.write("Proses Information Gain")  # Debugging tambahan
-        url = "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"
+        url = "https://raw.githubusercontent.com/dinia28/skripsi/main/ig.csv"
         response = requests.get(url)
         if response.status_code == 200:
             data = BytesIO(response.content)

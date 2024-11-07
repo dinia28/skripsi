@@ -258,11 +258,11 @@ with st.container():
         from io import BytesIO
         st.subheader("Information Gain")
         st.write("Proses Information Gain")  # Debugging tambahan
-        url = "https://raw.githubusercontent.com/dinia28/skripsi/main/ig.csv"
+        url = "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"
         response = requests.get(url)
         if response.status_code == 200:
             data = BytesIO(response.content)
-            df = pd.read_csv(data)
+            df = pd.read_excel(data)
             st.dataframe(df, width=600)
         else:
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")

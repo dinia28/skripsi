@@ -310,14 +310,14 @@ with st.container():
         percentage = st.slider("Persentase Fitur yang Dipilih:", 60, 95, step=5)
         
         # Parameter KNN
-        n_neighbors_options = list(range(1, 11))
+        n_neighbors_options = [3, 5, 7, 9]
         weights_options = ['distance']
         metric_options = ['euclidean', 'manhattan']
         
         # Load Data
         uploaded_file = st.file_uploader("Unggah File TF-IDF", type="xlsx")
         if uploaded_file:
-            tfidf_df = pd.read_excel(uploaded_file)
+            tfidf_df = pd.read_excel('hasil_tfidf.xlsx')
             X = tfidf_df.drop(columns=['Label'])
             y = tfidf_df['Label']
             

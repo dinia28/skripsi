@@ -325,8 +325,8 @@ with st.container():
     st.write("Data yang dimuat:", tfidf_df.head())
         
         # Memisahkan fitur dan label
-        X = tfidf_df.drop(columns=['Label'])
-        y = tfidf_df['Label']
+    X = tfidf_df.drop(columns=['Label'])
+    y = tfidf_df['Label']
         
         # Menangani NaN
         if X.isnull().sum().sum() > 0:

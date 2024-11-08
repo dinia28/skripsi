@@ -301,11 +301,8 @@ with st.container():
                     for metric in metric_options:
                         start_time = time.time()
                         
-                        # Menentukan nilai p untuk metrik Minkowski
-                        p = 2 if metric == 'euclidean' else 1
-                        
-                        # Membuat model dengan parameter n_neighbors, weights, dan p
-                        knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, p=p)
+                        # Buat model dengan kombinasi parameter yang berbeda
+                        knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, metric=metric)
                         knn_model.fit(X_train, y_train)
                         accuracy = knn_model.score(X_test, y_test)
                         end_time = time.time()

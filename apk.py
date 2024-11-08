@@ -268,8 +268,10 @@ with st.container():
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
     
     elif selected == "Model WKNN":
+        # Fungsi untuk memuat data
         def load_data():
             return pd.read_excel("tf_idf.xlsx")
+        
         # Fungsi seleksi fitur
         def feature_selection(X, y, percentage):
             num_features_to_select = int(percentage / 100 * X.shape[1])
@@ -291,6 +293,8 @@ with st.container():
             best_accuracy = 0
             best_model = None
             best_param_set = {}
+            best_class_report = ""
+            best_cm = None
             elapsed_time = 0
             
             for n_neighbors in n_neighbors_options:
@@ -307,12 +311,10 @@ with st.container():
                             best_accuracy = accuracy
                             best_model = knn_model
                             best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
+                            best_class_report = classification_report(y_test, knn_model.predict(X_test))
+                            best_cm = confusion_matrix(y_test, knn_model.predict(X_test))
             
-            y_pred = best_model.predict(X_test)
-            class_report = classification_report(y_test, y_pred)
-            cm = confusion_matrix(y_test, y_pred)
-            
-            return best_accuracy, best_model, best_param_set, class_report, cm, elapsed_time
+            return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time
         
         # Load data dan preprocessing
         tfidf_df = load_data()
@@ -339,6 +341,9 @@ with st.container():
         best_params = []
         feature_rankings_df = pd.DataFrame()
         
+        best_class_report = ""
+        best_cm = None
+        
         for percentage in range(initial_percentage, max_percentage + 1, step_percentage):
             X_selected, feature_rankings, selector = feature_selection(X_resampled, y_resampled, percentage)
             feature_rankings_df = pd.concat([feature_rankings_df, feature_rankings], axis=1)
@@ -346,6 +351,11 @@ with st.container():
             accuracy, best_model, best_param_set, class_report, cm, elapsed_time = model_training(
                 X_selected, y_resampled, n_neighbors_options, weights_options, metric_options
             )
+            
+            # Simpan hasil dari model terbaik
+            if accuracy == max(accuracies, default=0):
+                best_class_report = class_report
+                best_cm = cm
             
             percentages.append(percentage)
             accuracies.append(accuracy)
@@ -371,11 +381,11 @@ with st.container():
         
         # Classification Report dan Confusion Matrix untuk Model Terbaik
         st.write("Laporan Klasifikasi untuk Model Terbaik:")
-        st.text(class_report)
+        st.text(best_class_report)
         
         st.write("Confusion Matrix untuk Model Terbaik:")
         fig, ax = plt.subplots()
-        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
+        sns.heatmap(best_cm, annot=True, fmt="d", cmap="Blues", ax=ax)
         plt.xlabel("Predicted Labels")
         plt.ylabel("True Labels")
         st.pyplot(fig)

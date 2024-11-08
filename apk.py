@@ -285,7 +285,7 @@ with st.container():
             
             return X_selected_df, feature_rankings, selector
         
-                # Fungsi pelatihan model KNN
+        # Fungsi pelatihan model KNN
         def model_training(X, y, n_neighbors_options, weights_options, metric_options):
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
             
@@ -295,38 +295,38 @@ with st.container():
             best_class_report = ""
             best_cm = None
             elapsed_time = 0
-        
+            
             for n_neighbors in n_neighbors_options:
                 for weights in weights_options:
                     for metric in metric_options:
                         start_time = time.time()
-                # Menentukan nilai p untuk metrik Minkowski
-                p = 2 if metric == 'euclidean' else 1
-                
-                # Membuat model dengan parameter n_neighbors, weights, dan p
-                knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, p=p)
-                knn_model.fit(X_train, y_train)
                         
-                # Evaluasi model
-                accuracy = knn_model.score(X_test, y_test)
-                end_time = time.time()
-                elapsed_time = end_time - start_time
-        # Simpan model terbaik berdasarkan akurasi
-        if accuracy > best_accuracy:
-            best_accuracy = accuracy
-            best_model = knn_model
-            best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
-            best_class_report = classification_report(y_test, knn_model.predict(X_test))
-            best_cm = confusion_matrix(y_test, knn_model.predict(X_test))
-    return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time
+                        # Menentukan nilai p untuk metrik Minkowski
+                        p = 2 if metric == 'euclidean' else 1
+                        
+                        # Membuat model dengan parameter n_neighbors, weights, dan p
+                        knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, p=p)
+                        knn_model.fit(X_train, y_train)
+                        accuracy = knn_model.score(X_test, y_test)
+                        end_time = time.time()
+                        elapsed_time = end_time - start_time
+                    
+                        if accuracy > best_accuracy:
+                            best_accuracy = accuracy
+                            best_model = knn_model
+                            best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
+                            best_class_report = classification_report(y_test, knn_model.predict(X_test))
+                            best_cm = confusion_matrix(y_test, knn_model.predict(X_test))
             
+            return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time
+        
         # Load data dan preprocessing
-    tfidf_df = load_data()
-    st.write("Data yang dimuat:", tfidf_df.head())
+        tfidf_df = load_data()
+        st.write("Data yang dimuat:", tfidf_df.head())
         
         # Memisahkan fitur dan label
-    X = tfidf_df.drop(columns=['Label'])
-    y = tfidf_df['Label']
+        X = tfidf_df.drop(columns=['Label'])
+        y = tfidf_df['Label']
         
         # Menangani NaN
         if X.isnull().sum().sum() > 0:
@@ -408,7 +408,6 @@ with st.container():
             results_df.to_excel(writer, sheet_name='Training Results', index=False)
             feature_rankings_df.to_excel(writer, sheet_name='Feature Rankings', index=True)
         st.write("Hasil pelatihan dan peringkat fitur disimpan dalam 'training_results_with_rankings.xlsx'")
-
     
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

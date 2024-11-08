@@ -327,7 +327,6 @@ with st.container():
         
         # Load data dan preprocessing
         tfidf_df = load_data()
-        st.write("Data yang dimuat:", tfidf_df.head())
         
         # Memisahkan fitur dan label
         X = tfidf_df.drop(columns=['Label'])
@@ -349,7 +348,7 @@ with st.container():
         metric_options = ['euclidean', 'manhattan']
         
         # Buat select box untuk memilih persentase seleksi fitur
-        percentage_options = [95, 90, 85, 80, 75, 70, 65, 60]
+        percentage_options = [95, 90, 85, 80, 75, 70, 65]
         selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
         
         # Jalankan seleksi fitur dan pelatihan model dengan persentase yang dipilih

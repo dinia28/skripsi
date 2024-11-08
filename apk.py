@@ -271,11 +271,11 @@ with st.container():
         def load_data():
             return pd.read_excel("hasil_tfidf.xlsx")
         
-        # Feature selection function
-        # Memisahkan fitur dan label
-        tfidf_df = pd.read_excel('hasil_tfidf.xlsx')
-        X = tfidf_df.drop(columns=['Label'])  # Fitur (TF-IDF values)
-        y = tfidf_df['Label']  # Label
+            # Feature selection function
+            # Memisahkan fitur dan label
+            tfidf_df = pd.read_excel('hasil_tfidf.xlsx')
+            X = tfidf_df.drop(columns=['Label'])  # Fitur (TF-IDF values)
+            y = tfidf_df['Label']  # Label
         def feature_selection(X, y, percentage):
             num_features_to_select = int(percentage / 100 * X.shape[1])
             selector = SelectKBest(mutual_info_classif, k=num_features_to_select)

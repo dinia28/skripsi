@@ -282,7 +282,7 @@ with st.container():
         metric_options = ['euclidean', 'manhattan']
     
         # Pengguna memilih parameter
-        percentage = st.selectbox("pilih seleksi fitur", initial_percentage, max_percentage, step_percentage)
+        percentage = st.selectbox("pilih seleksi fitur")
         n_neighbors = st.selectbox("Pilih jumlah neighbors", n_neighbors_options)
         weights = st.selectbox("Pilih fungsi bobot", weights_options)
         metric = st.selectbox("Pilih metrik jarak", metric_options)

@@ -286,35 +286,41 @@ with st.container():
             return X_selected_df, feature_rankings, selector
         
         # Fungsi pelatihan model KNN
-        def model_training(X, y, n_neighbors_options, weights_options, metric_options):
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-            
-            best_accuracy = 0
-            best_model = None
-            best_param_set = {}
-            best_class_report = ""
-            best_cm = None
-            elapsed_time = 0
-            
-            for n_neighbors in n_neighbors_options:
-                for weights in weights_options:
-                    for metric in metric_options:
-                        start_time = time.time()
-                        knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, metric=metric)
-                        knn_model.fit(X_train, y_train)
-                        accuracy = knn_model.score(X_test, y_test)
-                        end_time = time.time()
-                        elapsed_time = end_time - start_time
+        # Fungsi pelatihan model KNN
+def model_training(X, y, n_neighbors_options, weights_options, metric_options):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+    best_accuracy = 0
+    best_model = None
+    best_param_set = {}
+    best_class_report = ""
+    best_cm = None
+    elapsed_time = 0
+    
+        for n_neighbors in n_neighbors_options:
+            for weights in weights_options:
+                for metric in metric_options:
+                    start_time = time.time()
                     
-                        if accuracy > best_accuracy:
-                            best_accuracy = accuracy
-                            best_model = knn_model
-                            best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
-                            best_class_report = classification_report(y_test, knn_model.predict(X_test))
-                            best_cm = confusion_matrix(y_test, knn_model.predict(X_test))
-            
-            return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time
+                    # Buat model dengan kombinasi parameter yang berbeda
+                    knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, metric=metric)
+                    knn_model.fit(X_train, y_train)
+                    
+                    # Evaluasi model
+                    accuracy = knn_model.score(X_test, y_test)
+                    end_time = time.time()
+                    elapsed_time = end_time - start_time
+    
+                    # Simpan model terbaik berdasarkan akurasi
+                    if accuracy > best_accuracy:
+                        best_accuracy = accuracy
+                        best_model = knn_model
+                        best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
+                        best_class_report = classification_report(y_test, knn_model.predict(X_test))
+                        best_cm = confusion_matrix(y_test, knn_model.predict(X_test))
         
+        return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time
+            
         # Load data dan preprocessing
         tfidf_df = load_data()
         st.write("Data yang dimuat:", tfidf_df.head())

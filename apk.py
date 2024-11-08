@@ -269,7 +269,7 @@ with st.container():
     
     elif selected == "Model WKNN":
         def load_data():
-            return pd.read_excel("tf_idf.xlsx")
+            return pd.read_excel("hasil_tfidf.xlsx")
         
         # Feature selection function
         def feature_selection(X, y, percentage):

@@ -274,11 +274,15 @@ with st.container():
         y = df['Label']  # Variabel target (Label)
     
         # Opsi Hyperparameter
+        initial_percentage = 95
+        max_percentage = 60
+        step_percentage = -5
         n_neighbors_options = [3, 5, 7, 9]
         weights_options = ['distance']
         metric_options = ['euclidean', 'manhattan']
     
         # Pengguna memilih parameter
+        percentage = st.selectbox("pilih seleksi fitur", initial_percentage, max_percentage, step_percentage)
         n_neighbors = st.selectbox("Pilih jumlah neighbors", n_neighbors_options)
         weights = st.selectbox("Pilih fungsi bobot", weights_options)
         metric = st.selectbox("Pilih metrik jarak", metric_options)
@@ -287,11 +291,7 @@ with st.container():
         if st.button('Latih Model'):
             # Latih model
             accuracy, best_model, best_param_set, elapsed_time = model_training(X, y, n_neighbors, weights, metric)
-            st.write("X:", X)
-            st.write("y:", y)
-            st.write("n_neighbors:", n_neighbors)
-            st.write("weights:", weights)
-            st.write("metric:", metric)
+        
             # Tampilkan Hasil
             st.write(f"Akurasinya terbaik: {accuracy:.4f}")
             st.write(f"Parameter model terbaik: {best_param_set}")

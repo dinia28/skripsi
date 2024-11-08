@@ -286,7 +286,7 @@ with st.container():
         # Tombol untuk melatih model
         if st.button('Latih Model'):
             # Latih model
-            accuracy, best_model, best_param_set, elapsed_time = model_training(X, y, [n_neighbors], [weights], [metric])
+            accuracy, best_model, best_param_set, elapsed_time = model_training(X, y, n_neighbors, weights, metric)
     
             # Tampilkan Hasil
             st.write(f"Akurasinya terbaik: {accuracy:.4f}")

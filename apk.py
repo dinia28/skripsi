@@ -313,12 +313,12 @@ with st.container():
                 elapsed_time = end_time - start_time
         # Simpan model terbaik berdasarkan akurasi
         if accuracy > best_accuracy:
-        best_accuracy = accuracy
-        best_model = knn_model
-        best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
-        best_class_report = classification_report(y_test, knn_model.predict(X_test))
-        best_cm = confusion_matrix(y_test, knn_model.predict(X_test))
-        return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time
+            best_accuracy = accuracy
+            best_model = knn_model
+            best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
+            best_class_report = classification_report(y_test, knn_model.predict(X_test))
+            best_cm = confusion_matrix(y_test, knn_model.predict(X_test))
+            return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time
             
         # Load data dan preprocessing
         tfidf_df = load_data()

@@ -349,7 +349,7 @@ with st.container():
             initial_percentage = 95
             max_percentage = 60
             step_percentage = -5
-            n_neighbors_options = list(range(1, 11))
+            n_neighbors_options = [3, 5, 7, 9]
             weights_options = ['distance']
             metric_options = ['euclidean', 'manhattan']
             

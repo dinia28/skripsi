@@ -286,7 +286,7 @@ with st.container():
         feature_scores = selector.scores_[selected_feature_indices]
         feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns[selected_feature_indices], columns=[f'Rank_{percentage}%'])
        
-        return X_selected_df, feature_rankings, selector
+            return X_selected_df, feature_rankings, selector
         
         # Fungsi pelatihan model KNN
         def model_training(X, y, n_neighbors_options, weights_options, metric_options):

@@ -274,13 +274,14 @@ with st.container():
         
         # Fungsi seleksi fitur
         def feature_selection(X, y, percentage):
+            X = X.select_dtypes(include=['number'])  # Memastikan hanya fitur numerik
+            X = X.values  # Mengonversi DataFrame menjadi array NumPy
             num_features_to_select = int(percentage / 100 * X.shape[1])
             selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
             X_selected = selector.fit_transform(X, y)
             selected_feature_indices = selector.get_support(indices=True)
-            X_selected_df = X.iloc[:, selected_feature_indices]
+            X_selected_df = pd.DataFrame(X_selected, columns=X.columns[selected_feature_indices])
             
-            # Ambil hanya skor fitur yang terpilih
             feature_scores = selector.scores_[selected_feature_indices]
             feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns[selected_feature_indices], columns=[f'Rank_{percentage}%'])
             

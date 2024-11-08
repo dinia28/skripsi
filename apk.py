@@ -270,7 +270,7 @@ with st.container():
     elif selected == "Model WKNN":
         # Fungsi untuk memuat data
         def load_data():
-            return pd.read_excel("tf_idf.xlsx")
+            return pd.read_excel("hasil_tfidf.xlsx")
         
         # Fungsi seleksi fitur
         def feature_selection(X, y, percentage):

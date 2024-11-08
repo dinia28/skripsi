@@ -282,10 +282,9 @@ with st.container():
             selected_feature_indices = selector.get_support(indices=True)
             X_selected_df = X.iloc[:, selected_feature_indices]
             
-        # Ambil hanya skor fitur yang terpilih
-        feature_scores = selector.scores_[selected_feature_indices]
-        feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns[selected_feature_indices], columns=[f'Rank_{percentage}%'])
-       
+            # Ambil hanya skor fitur yang terpilih
+            feature_scores = selector.scores_[selected_feature_indices]
+            feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns[selected_feature_indices], columns=[f'Rank_{percentage}%'])
             return X_selected_df, feature_rankings, selector
         
         # Fungsi pelatihan model KNN

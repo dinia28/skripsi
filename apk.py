@@ -359,7 +359,7 @@ with st.container():
             feature_rankings_df = pd.concat([feature_rankings_df, feature_rankings], axis=1)
             
             accuracy, best_model, best_param_set, class_report, cm, elapsed_time = model_training(
-                X_selected, y_resampled, n_neighbors_options, weights_options, p_options
+                X_selected, y_resampled, n_neighbors_options, weights_options, metric_options
             )
             
             percentages.append(percentage)

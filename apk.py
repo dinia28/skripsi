@@ -372,21 +372,18 @@ with st.container():
                 best_class_report = class_report
                 best_cm = cm
         
-        # Tampilkan hasil di Streamlit
-        st.title("Hasil Pelatihan WKNN")
-        results_df = pd.DataFrame({
-            'Percentage': percentages,
-            'Accuracy': accuracies,
-            'Elapsed Time (s)': elapsed_times,
-            'Best Parameters': best_params
-        })
-        st.write("Hasil pelatihan model:")
-        st.dataframe(results_df)
+        # Buat select box untuk memilih persentase
+        selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentages)
         
-        # Tampilkan hasil model terbaik
-        best_index = accuracies.index(max(accuracies))
-        st.write(f"Akurasi Terbaik: {accuracies[best_index]}")
-        st.write(f"Parameter Terbaik: {best_params[best_index]}")
+        # Tampilkan hasil berdasarkan persentase yang dipilih
+        selected_index = percentages.index(selected_percentage)
+        st.write(f"Hasil untuk Persentase Seleksi Fitur: {selected_percentage}%")
+        st.write(f"Akurasi: {accuracies[selected_index]}")
+        st.write(f"Parameter Terbaik: {best_params[selected_index]}")
+        
+        # Tampilkan ranking fitur untuk persentase yang dipilih
+        st.write("Ranking Fitur untuk Persentase yang Dipilih:")
+        st.dataframe(feature_rankings_df[[f'Rank_{selected_percentage}%']])
         
         # Classification Report dan Confusion Matrix untuk Model Terbaik
         st.write("Laporan Klasifikasi untuk Model Terbaik:")
@@ -400,11 +397,16 @@ with st.container():
         st.pyplot(fig)
         
         # Simpan hasil
+        results_df = pd.DataFrame({
+            'Percentage': percentages,
+            'Accuracy': accuracies,
+            'Elapsed Time (s)': elapsed_times,
+            'Best Parameters': best_params
+        })
         results_df.to_excel('training_results.xlsx', index=False)
         with pd.ExcelWriter('training_results_with_rankings.xlsx') as writer:
             results_df.to_excel(writer, sheet_name='Training Results', index=False)
             feature_rankings_df.to_excel(writer, sheet_name='Feature Rankings', index=True)
         st.write("Hasil pelatihan dan peringkat fitur disimpan dalam 'training_results_with_rankings.xlsx'")
-    
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

@@ -6,7 +6,7 @@ from numpy import array
 from sklearn.impute import SimpleImputer
 from sklearn.feature_selection import SelectKBest, mutual_info_classif
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsRegressor
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
 import subprocess

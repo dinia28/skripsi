@@ -275,7 +275,7 @@ with st.container():
     
         # Opsi Hyperparameter
         n_neighbors_options = [3, 5, 7, 9]
-        weights_options = ['uniform', 'distance']
+        weights_options = ['distance']
         metric_options = ['euclidean', 'manhattan']
     
         # Pengguna memilih parameter
@@ -287,7 +287,11 @@ with st.container():
         if st.button('Latih Model'):
             # Latih model
             accuracy, best_model, best_param_set, elapsed_time = model_training(X, y, n_neighbors, weights, metric)
-    
+            st.write("X:", X)
+            st.write("y:", y)
+            st.write("n_neighbors:", n_neighbors)
+            st.write("weights:", weights)
+            st.write("metric:", metric)
             # Tampilkan Hasil
             st.write(f"Akurasinya terbaik: {accuracy:.4f}")
             st.write(f"Parameter model terbaik: {best_param_set}")

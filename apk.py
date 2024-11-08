@@ -327,7 +327,7 @@ with st.container():
         
         # Load data dan preprocessing
         tfidf_df = load_data()
-        
+        st.write("Data yang dimuat:", tfidf_df.head())
         
         # Memisahkan fitur dan label
         X = tfidf_df.drop(columns=['Label'])
@@ -344,15 +344,16 @@ with st.container():
         X_resampled, y_resampled = ros.fit_resample(X, y)
         
         # Definisikan parameter
-        initial_percentage = 95
-        max_percentage = 60
-        step_percentage = -5
         n_neighbors_options = [3, 5, 7, 9]
         weights_options = ['distance']
         metric_options = ['euclidean', 'manhattan']
         
-        # Jalankan seleksi fitur dan pelatihan model
-        X_selected, feature_rankings, selector = feature_selection(X_resampled, y_resampled, initial_percentage)
+        # Buat select box untuk memilih persentase seleksi fitur
+        percentage_options = [95, 90, 85, 80, 75, 70, 65, 60]
+        selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
+        
+        # Jalankan seleksi fitur dan pelatihan model dengan persentase yang dipilih
+        X_selected, feature_rankings, selector = feature_selection(X_resampled, y_resampled, selected_percentage)
         accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time, model_results = model_training(
             X_selected, y_resampled, n_neighbors_options, weights_options, metric_options
         )
@@ -374,14 +375,13 @@ with st.container():
         st.pyplot(fig)
         
         # Tampilkan informasi model terbaik
-        st.write(f"\nModel saved as: best_knn_model_{initial_percentage}percent.pkl")
-        st.write(f"Best Params for {initial_percentage}% features: {best_param_set}")
+        st.write(f"\nModel saved as: best_knn_model_{selected_percentage}percent.pkl")
+        st.write(f"Best Params for {selected_percentage}% features: {best_param_set}")
         st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
         st.write(f"Total Elapsed Time for Best Model: {elapsed_time:.2f} seconds")
         
         # Simpan model terbaik
-        import joblib
-        joblib.dump(best_model, f"best_knn_model_{initial_percentage}percent.pkl")
-                
+        joblib.dump(best_model, f"best_knn_model_{selected_percentage}percent.pkl")
+
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

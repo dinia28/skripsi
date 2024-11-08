@@ -321,8 +321,8 @@ with st.container():
     return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time
             
         # Load data dan preprocessing
-        tfidf_df = load_data()
-        st.write("Data yang dimuat:", tfidf_df.head())
+    tfidf_df = load_data()
+    st.write("Data yang dimuat:", tfidf_df.head())
         
         # Memisahkan fitur dan label
         X = tfidf_df.drop(columns=['Label'])

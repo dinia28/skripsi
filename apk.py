@@ -270,24 +270,21 @@ with st.container():
     elif selected == "Model WKNN":
         # Fungsi untuk memuat data
         def load_data(uploaded_file):
-            return pd.read_excel('hasil_tfidf.xlsx')
+            return pd.read_excel(uploaded_file)
         
         # Fungsi seleksi fitur
         def feature_selection(X, y, percentage):
-            if isinstance(X, np.ndarray):  # Jika X adalah array NumPy
-                X = pd.DataFrame(X)  # Mengonversi kembali ke DataFrame
-            
             num_features_to_select = int(percentage / 100 * X.shape[1])
             selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
             X_selected = selector.fit_transform(X, y)
             selected_feature_indices = selector.get_support(indices=True)
-            X_selected_df = X.iloc[:, selected_feature_indices]  # Pastikan X adalah DataFrame
+            X_selected_df = X.iloc[:, selected_feature_indices]
             
             feature_scores = selector.scores_[selected_feature_indices]
             feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns[selected_feature_indices], columns=[f'Rank_{percentage}%'])
             
             return X_selected_df, feature_rankings, selector
-                
+        
         # Fungsi pelatihan model KNN
         def model_training(X, y, n_neighbors_options, weights_options, metric_options):
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -308,7 +305,7 @@ with st.container():
                         accuracy = knn_model.score(X_test, y_test)
                         end_time = time.time()
                         elapsed_time = end_time - start_time
-                    
+                        
                         if accuracy > best_accuracy:
                             best_accuracy = accuracy
                             best_model = knn_model
@@ -336,10 +333,6 @@ with st.container():
                 st.warning("Data memiliki NaN. Menghapus NaN dari data.")
                 X = X.dropna()
                 y = y[X.index]
-            
-            # Mengonversi menjadi array NumPy jika diperlukan
-            X = X.values
-            y = y.values
             
             # Oversample data
             ros = RandomOverSampler(random_state=42)
@@ -416,6 +409,6 @@ with st.container():
                 results_df.to_excel(writer, sheet_name='Training Results', index=False)
                 feature_rankings_df.to_excel(writer, sheet_name='Feature Rankings', index=True)
             st.write("Hasil pelatihan dan peringkat fitur disimpan dalam 'training_results_with_rankings.xlsx'")
-                    
+    
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

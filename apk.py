@@ -274,19 +274,20 @@ with st.container():
         
         # Fungsi seleksi fitur
         def feature_selection(X, y, percentage):
-            # Pastikan X adalah DataFrame, dan hanya ambil kolom numerik
-            X = X.select_dtypes(include=['number'])
+            if isinstance(X, np.ndarray):  # Jika X adalah array NumPy
+                X = pd.DataFrame(X)  # Mengonversi kembali ke DataFrame
+            
             num_features_to_select = int(percentage / 100 * X.shape[1])
             selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
             X_selected = selector.fit_transform(X, y)
             selected_feature_indices = selector.get_support(indices=True)
-            X_selected_df = X.iloc[:, selected_feature_indices]
+            X_selected_df = X.iloc[:, selected_feature_indices]  # Pastikan X adalah DataFrame
             
-            # Ambil hanya skor fitur yang terpilih
             feature_scores = selector.scores_[selected_feature_indices]
             feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns[selected_feature_indices], columns=[f'Rank_{percentage}%'])
+            
             return X_selected_df, feature_rankings, selector
-        
+                
         # Fungsi pelatihan model KNN
         def model_training(X, y, n_neighbors_options, weights_options, metric_options):
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

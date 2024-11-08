@@ -1,7 +1,7 @@
 streamlit
 pandas
 imbalanced-learn
-scikit-learn
+scikit-learn==1.2.0
 scipy
 streamlit-option-menu
 matplotlib

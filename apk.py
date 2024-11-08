@@ -307,10 +307,10 @@ with st.container():
                 knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, p=p)
                 knn_model.fit(X_train, y_train)
                         
-                        # Evaluasi model
-                        accuracy = knn_model.score(X_test, y_test)
-                        end_time = time.time()
-                        elapsed_time = end_time - start_time
+                # Evaluasi model
+                accuracy = knn_model.score(X_test, y_test)
+                end_time = time.time()
+                elapsed_time = end_time - start_time
         # Simpan model terbaik berdasarkan akurasi
                         if accuracy > best_accuracy:
                             best_accuracy = accuracy

@@ -295,7 +295,8 @@ with st.container():
             best_class_report = ""
             best_cm = None
             elapsed_time = 0
-            
+            model_results = []  # Untuk menyimpan hasil setiap parameter
+        
             for n_neighbors in n_neighbors_options:
                 for weights in weights_options:
                     for metric in metric_options:
@@ -307,7 +308,14 @@ with st.container():
                         accuracy = knn_model.score(X_test, y_test)
                         end_time = time.time()
                         elapsed_time = end_time - start_time
-                    
+                        
+                        # Simpan hasil untuk setiap kombinasi parameter
+                        model_results.append({
+                            'Params': f"n_neighbors={n_neighbors}, weights={weights}, metric={metric}",
+                            'Accuracy': accuracy,
+                            'Time': elapsed_time
+                        })
+        
                         if accuracy > best_accuracy:
                             best_accuracy = accuracy
                             best_model = knn_model
@@ -315,11 +323,10 @@ with st.container():
                             best_class_report = classification_report(y_test, knn_model.predict(X_test))
                             best_cm = confusion_matrix(y_test, knn_model.predict(X_test))
             
-            return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time
+            return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time, model_results
         
         # Load data dan preprocessing
         tfidf_df = load_data()
-        
         
         # Memisahkan fitur dan label
         X = tfidf_df.drop(columns=['Label'])
@@ -336,62 +343,29 @@ with st.container():
         X_resampled, y_resampled = ros.fit_resample(X, y)
         
         # Definisikan parameter
-        initial_percentage = 95
-        max_percentage = 60
-        step_percentage = -5
         n_neighbors_options = [3, 5, 7, 9]
         weights_options = ['distance']
         metric_options = ['euclidean', 'manhattan']
         
-        percentages = []
-        accuracies = []
-        elapsed_times = []
-        best_models = []
-        best_params = []
-        feature_rankings_df = pd.DataFrame()
+        # Buat select box untuk memilih persentase seleksi fitur
+        percentage_options = [95, 90, 85, 80, 75, 70, 65]
+        selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
         
-        best_class_report = ""
-        best_cm = None
+        # Jalankan seleksi fitur dan pelatihan model dengan persentase yang dipilih
+        X_selected, feature_rankings, selector = feature_selection(X_resampled, y_resampled, selected_percentage)
+        accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time, model_results = model_training(
+            X_selected, y_resampled, n_neighbors_options, weights_options, metric_options
+        )
         
-        # Jalankan seleksi fitur dan pelatihan model dalam loop
-        for percentage in range(initial_percentage, max_percentage + 1, step_percentage):
-            X_selected, feature_rankings, selector = feature_selection(X_resampled, y_resampled, percentage)
-            feature_rankings_df = pd.concat([feature_rankings_df, feature_rankings], axis=1)
-            
-            accuracy, best_model, best_param_set, class_report, cm, elapsed_time = model_training(
-                X_selected, y_resampled, n_neighbors_options, weights_options, metric_options
-            )
-            
-            percentages.append(percentage)
-            accuracies.append(accuracy)
-            elapsed_times.append(elapsed_time)
-            best_models.append(best_model)
-            best_params.append(best_param_set)
-            
-            if accuracy == max(accuracies, default=0):
-                best_class_report = class_report
-                best_cm = cm
+        # Tampilkan hasil dalam format yang diinginkan
+        st.write("Hasil Pelatihan Model:")
+        for result in model_results:
+            st.write(f"Params: {result['Params']} | Accuracy: {result['Accuracy']:.4f} | Time: {result['Time']:.2f} seconds")
         
-        # Tampilkan hasil di Streamlit
-        st.title("Hasil Pelatihan WKNN")
-        results_df = pd.DataFrame({
-            'Percentage': percentages,
-            'Accuracy': accuracies,
-            'Elapsed Time (s)': elapsed_times,
-            'Best Parameters': best_params
-        })
-        st.write("Hasil pelatihan model:")
-        st.dataframe(results_df)
-        
-        # Tampilkan hasil model terbaik
-        best_index = accuracies.index(max(accuracies))
-        st.write(f"Akurasi Terbaik: {accuracies[best_index]}")
-        st.write(f"Parameter Terbaik: {best_params[best_index]}")
-        
-        # Classification Report dan Confusion Matrix untuk Model Terbaik
-        st.write("Laporan Klasifikasi untuk Model Terbaik:")
+        st.write("\nClassification Report:")
         st.text(best_class_report)
         
+        # Tampilkan Confusion Matrix untuk Model Terbaik
         st.write("Confusion Matrix untuk Model Terbaik:")
         fig, ax = plt.subplots()
         sns.heatmap(best_cm, annot=True, fmt="d", cmap="Blues", ax=ax)
@@ -399,12 +373,14 @@ with st.container():
         plt.ylabel("True Labels")
         st.pyplot(fig)
         
-        # Simpan hasil
-        results_df.to_excel('training_results.xlsx', index=False)
-        with pd.ExcelWriter('training_results_with_rankings.xlsx') as writer:
-            results_df.to_excel(writer, sheet_name='Training Results', index=False)
-            feature_rankings_df.to_excel(writer, sheet_name='Feature Rankings', index=True)
-        st.write("Hasil pelatihan dan peringkat fitur disimpan dalam 'training_results_with_rankings.xlsx'")
+        # Tampilkan informasi model terbaik
+        st.write(f"\nModel saved as: best_knn_model_{selected_percentage}percent.pkl")
+        st.write(f"Best Params for {selected_percentage}% features: {best_param_set}")
+        st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
+        st.write(f"Total Elapsed Time for Best Model: {elapsed_time:.2f} seconds")
+        
+        # Simpan model terbaik
+        joblib.dump(best_model, f"best_knn_model_{selected_percentage}percent.pkl")
 
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

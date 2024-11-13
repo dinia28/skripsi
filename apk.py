@@ -355,7 +355,7 @@ with st.container():
         best_model = joblib.load(f"best_knn_model_{selected_percentage}percent.pkl")
         
         # Pastikan X_resampled memiliki kolom yang sama dengan yang digunakan oleh selector
-        # Mengatur kolom pada X_resampled agar sesuai dengan kolom pada X (sebelum oversampling)
+       # Menyusun ulang kolom X_resampled agar sesuai dengan urutan dan nama kolom pada X yang digunakan saat training
         X_resampled = pd.DataFrame(X_resampled, columns=X.columns)
         
         # Gunakan selector untuk memilih fitur
@@ -367,7 +367,7 @@ with st.container():
         best_class_report = classification_report(y_resampled, y_pred)
         best_cm = confusion_matrix(y_resampled, y_pred)
         
-        # Menampilkan hasil
+        # Tampilkan hasil
         st.write(f"Accuracy: {accuracy:.4f}")
         st.text(best_class_report)
         
@@ -377,7 +377,7 @@ with st.container():
         plt.xlabel("Predicted Labels")
         plt.ylabel("True Labels")
         st.pyplot(fig)
-        
+                
         # Tampilkan informasi model terbaik
         st.write(f"\nModel saved as: best_knn_model_{selected_percentage}percent.pkl")
         st.write(f"Best Params for {selected_percentage}% features: {best_param_set}")

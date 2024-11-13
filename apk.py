@@ -283,24 +283,22 @@ with st.container():
         # Pilih persentase seleksi fitur
         percentage_options = [65, 70, 75, 80, 85, 90, 95]
         selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
-        
-        
-            # Path file model dan selektor fitur
-            selector_file = f"/mnt/data/feature_selector_{selected_percentage}percent.pkl"
-            model_file = f"/mnt/data/best_knn_model_{selected_percentage}percent.pkl"
+        # Path file model dan selektor fitur
+        selector_file = f"/mnt/data/feature_selector_{selected_percentage}percent.pkl"
+        model_file = f"/mnt/data/best_knn_model_{selected_percentage}percent.pkl"
         
             # Load selector dan model
-            selector, model = load_selector_and_model(selector_file, model_file)
+        selector, model = load_selector_and_model(selector_file, model_file)
         
             # Memisahkan fitur dan label
-            if 'Label' in tfidf_df.columns:
-                X = tfidf_df.drop(columns=['Label'])
-                y = tfidf_df['Label']
-                st.write("Kolom Label ditemukan, data akan digunakan untuk evaluasi.")
-            else:
-                X = tfidf_df
-                y = None
-                st.write("Kolom Label tidak ditemukan, data akan digunakan untuk prediksi.")
+        if 'Label' in tfidf_df.columns:
+            X = tfidf_df.drop(columns=['Label'])
+            y = tfidf_df['Label']
+            st.write("Kolom Label ditemukan, data akan digunakan untuk evaluasi.")
+        else:
+            X = tfidf_df
+            y = None
+            st.write("Kolom Label tidak ditemukan, data akan digunakan untuk prediksi.")
         
             # Seleksi fitur
             X_selected = selector.transform(X)

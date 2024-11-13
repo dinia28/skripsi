@@ -291,6 +291,6 @@ with st.container():
         if best_model:
             st.write("Model terbaik untuk persentase yang dipilih:")
             st.write(best_model)
-        
+            
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

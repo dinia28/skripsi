@@ -299,12 +299,6 @@ with st.container():
                     elapsed_time = row['Elapsed Time (s)']
                     st.write(f"Params: {params} | Accuracy: {accuracy:.4f} | Time: {elapsed_time:.2f} seconds")
                 
-                # Menampilkan classification report dari model terbaik
-                st.subheader("Classification Report:")
-                if hasattr(best_model, 'classification_report'):
-                    st.text(best_model.classification_report)
-                else:
-                    st.text("Classification report tidak tersedia di model.")
                 
                 # Tampilkan informasi terbaik
                 best_accuracy = specific_results['Accuracy'].max()

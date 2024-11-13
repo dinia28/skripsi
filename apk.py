@@ -279,37 +279,39 @@ with st.container():
             X_selected = selector.fit_transform(X, y)
             selected_feature_indices = selector.get_support(indices=True)
             X_selected_df = pd.DataFrame(X_selected, columns=X.columns[selected_feature_indices])
-            
+        
             feature_scores = selector.scores_[selected_feature_indices]
-            feature_rankings = pd.DataFrame(data=feature_scores, index=X.columns[selected_feature_indices], columns=[f'Rank_{percentage}%'])
-            
+            feature_rankings = pd.DataFrame(
+                data=feature_scores,
+                index=X.columns[selected_feature_indices],
+                columns=[f'Rank_{percentage}%']
+            )
+        
             return X_selected_df, feature_rankings, selector
         
         # Fungsi pelatihan model KNN
         def model_training(X, y, n_neighbors_options, weights_options, metric_options):
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-            
+        
             best_accuracy = 0
             best_model = None
             best_param_set = {}
             best_class_report = ""
             best_cm = None
             elapsed_time = 0
-            model_results = []  # Untuk menyimpan hasil setiap parameter
+            model_results = []
         
             for n_neighbors in n_neighbors_options:
                 for weights in weights_options:
                     for metric in metric_options:
                         start_time = time.time()
-                        
-                        # Buat model dengan kombinasi parameter yang berbeda
+        
                         knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, metric=metric)
                         knn_model.fit(X_train, y_train)
                         accuracy = knn_model.score(X_test, y_test)
                         end_time = time.time()
                         elapsed_time = end_time - start_time
-                        
-                        # Simpan hasil untuk setiap kombinasi parameter
+        
                         model_results.append({
                             'Params': f"n_neighbors={n_neighbors}, weights={weights}, metric={metric}",
                             'Accuracy': accuracy,
@@ -322,65 +324,73 @@ with st.container():
                             best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
                             best_class_report = classification_report(y_test, knn_model.predict(X_test))
                             best_cm = confusion_matrix(y_test, knn_model.predict(X_test))
-            
+        
             return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time, model_results
         
-        # Load data dan preprocessing
-        tfidf_df = load_data()
+        # Aplikasi Streamlit
+        st.title("Aplikasi WKNN dengan Seleksi Fitur")
         
-        # Memisahkan fitur dan label
-        X = tfidf_df.drop(columns=['Label'])
-        y = tfidf_df['Label']
+        # Upload file TF-IDF
+        tfidf_file = st.file_uploader("Upload hasil TF-IDF (hasil_tfidf.xlsx)", type="xlsx")
         
-        # Menangani NaN
-        if X.isnull().sum().sum() > 0:
-            st.warning("Data memiliki NaN. Menghapus NaN dari data.")
-            X = X.dropna()
-            y = y[X.index]
+        if tfidf_file:
+            tfidf_df = load_data(tfidf_file)
+            st.write("Data Hasil TF-IDF:")
+            st.dataframe(tfidf_df)
         
-        # Oversample data
-        ros = RandomOverSampler(random_state=42)
-        X_resampled, y_resampled = ros.fit_resample(X, y)
+            # Memisahkan fitur dan label
+            X = tfidf_df.drop(columns=['Label'])
+            y = tfidf_df['Label']
         
-        # Definisikan parameter
-        n_neighbors_options = [3, 5, 7, 9]
-        weights_options = ['distance']
-        metric_options = ['euclidean', 'manhattan']
+            if X.isnull().sum().sum() > 0:
+                st.warning("Data memiliki NaN. Menghapus NaN dari data.")
+                X = X.dropna()
+                y = y[X.index]
         
-        # Buat select box untuk memilih persentase seleksi fitur
-        percentage_options = [95, 90, 85, 80, 75, 70, 65]
-        selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
+            # Oversample data
+            ros = RandomOverSampler(random_state=42)
+            X_resampled, y_resampled = ros.fit_resample(X, y)
         
-        # Jalankan seleksi fitur dan pelatihan model dengan persentase yang dipilih
-        X_selected, feature_rankings, selector = feature_selection(X_resampled, y_resampled, selected_percentage)
-        accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time, model_results = model_training(
-            X_selected, y_resampled, n_neighbors_options, weights_options, metric_options
-        )
+            # Pilih persentase seleksi fitur
+            percentage_options = [95, 90, 85, 80, 75, 70, 65]
+            selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
         
-        # Tampilkan hasil dalam format yang diinginkan
-        st.write("Hasil Pelatihan Model:")
-        for result in model_results:
-            st.write(f"Params: {result['Params']} | Accuracy: {result['Accuracy']:.4f} | Time: {result['Time']:.2f} seconds")
+            X_selected, feature_rankings, selector = feature_selection(X_resampled, y_resampled, selected_percentage)
+            st.write("Fitur yang Dipilih:")
+            st.dataframe(feature_rankings)
         
-        st.write("\nClassification Report:")
-        st.text(best_class_report)
+            # Pelatihan model
+            n_neighbors_options = [3, 5, 7, 9]
+            weights_options = ['distance']
+            metric_options = ['euclidean', 'manhattan']
         
-        # Tampilkan Confusion Matrix untuk Model Terbaik
-        st.write("Confusion Matrix untuk Model Terbaik:")
-        fig, ax = plt.subplots()
-        sns.heatmap(best_cm, annot=True, fmt="d", cmap="Blues", ax=ax)
-        plt.xlabel("Predicted Labels")
-        plt.ylabel("True Labels")
-        st.pyplot(fig)
+            if st.button("Latih Model"):
+                accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time, model_results = model_training(
+                    X_selected, y_resampled, n_neighbors_options, weights_options, metric_options
+                )
         
-        # Tampilkan informasi model terbaik
-        st.write(f"\nModel saved as: best_knn_model_{selected_percentage}percent.pkl")
-        st.write(f"Best Params for {selected_percentage}% features: {best_param_set}")
-        st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
-        st.write(f"Total Elapsed Time for Best Model: {elapsed_time:.2f} seconds")
+                st.write("Hasil Pelatihan Model:")
+                for result in model_results:
+                    st.write(f"Params: {result['Params']} | Accuracy: {result['Accuracy']:.4f} | Time: {result['Time']:.2f} seconds")
         
-        # Simpan model terbaik
-        joblib.dump(best_model, f"best_knn_model_{selected_percentage}percent.pkl")
+                st.write("\nClassification Report:")
+                st.text(best_class_report)
+        
+                st.write("Confusion Matrix untuk Model Terbaik:")
+                fig, ax = plt.subplots()
+                sns.heatmap(best_cm, annot=True, fmt="d", cmap="Blues", ax=ax)
+                plt.xlabel("Predicted Labels")
+                plt.ylabel("True Labels")
+                st.pyplot(fig)
+        
+                st.write(f"Best Params for {selected_percentage}% features: {best_param_set}")
+                st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
+                st.write(f"Total Elapsed Time for Best Model: {elapsed_time:.2f} seconds")
+        
+                # Simpan model terbaik
+                model_filename = f"best_knn_model_{selected_percentage}percent.pkl"
+                joblib.dump(best_model, model_filename)
+                st.write(f"Model disimpan dengan nama: {model_filename}")
 
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

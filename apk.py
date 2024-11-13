@@ -270,7 +270,7 @@ with st.container():
     elif selected == "Model WKNN":
         # Fungsi untuk memuat model berdasarkan persentase yang dipilih
         def load_model_by_percentage(percentage):
-            model_filename = f"best_model_knn_{percentage}percent.pkl"
+            model_filename = f"best_knn_model_{percentage}percent.pkl"
             
             if os.path.exists(model_filename):
                 model = joblib.load(model_filename)

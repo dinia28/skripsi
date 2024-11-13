@@ -268,41 +268,21 @@ with st.container():
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
     
     elif selected == "Model WKNN":
-        # Fungsi untuk memuat model yang sudah disimpan
-        def load_trained_model_and_data():
-            # Muat model dari file yang sudah disimpan
-            model = joblib.load("best_knn_model.pkl")
-            
-            # Muat hasil pelatihan dari file Excel
-            training_results = pd.read_excel("training_results_with_rankings.xlsx", sheet_name=None)
-            
-            # Memisahkan hasil yang relevan
-            best_param_set = training_results['Best_Params']
-            feature_rankings = training_results['Feature_Rankings']
-            classification_report_text = training_results['Classification_Report']
-            confusion_matrix_data = training_results['Confusion_Matrix']
+        training_results = pd.read_excel("training_results_with_rankings.xlsx")
+
+        # Cek kolom yang ada
+        st.write("Kolom yang ada di data:", training_results.columns)
         
-            return model, best_param_set, feature_rankings, classification_report_text, confusion_matrix_data
+        # Ambil nilai dari kolom yang sesuai
+        percentage_values = training_results['Percentage']
+        accuracy_values = training_results['Accuracy']
+        elapsed_time_values = training_results['Elapsed Time (s)']
+        best_parameters_values = training_results['Best Parameters']
         
-        # Load model dan data
-        best_model, best_param_set, feature_rankings, classification_report_text, confusion_matrix_data = load_trained_model_and_data()
-        
-        # Tampilkan hasil yang sama seperti di Colab
-        st.write("Model terbaik dari Colab:")
-        st.write(f"Best Params: {best_param_set}")
-        st.write("\nClassification Report:")
-        st.text(classification_report_text)
-        
-        # Tampilkan Confusion Matrix
-        st.write("Confusion Matrix untuk Model Terbaik:")
-        fig, ax = plt.subplots()
-        sns.heatmap(confusion_matrix_data, annot=True, fmt="d", cmap="Blues", ax=ax)
-        plt.xlabel("Predicted Labels")
-        plt.ylabel("True Labels")
-        st.pyplot(fig)
-        
-        # Tampilkan peringkat fitur
-        st.write("Feature Rankings:")
-        st.dataframe(feature_rankings)
+        # Tampilkan hasil
+        st.write("Data Persentase Seleksi Fitur:", percentage_values)
+        st.write("Akurasi:", accuracy_values)
+        st.write("Waktu Berlalu (detik):", elapsed_time_values)
+        st.write("Parameter Terbaik:", best_parameters_values)
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

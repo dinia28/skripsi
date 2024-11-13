@@ -282,8 +282,8 @@ with st.container():
         selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
         
         # File hasil TF-IDF tetap
-        tfidf_file = "hasil_tfidf.xlsx"
-        
+        file_path = "hasil_tfidf.xlsx"
+        df = pd.read_excel(file_path)
         # Cek keberadaan file TF-IDF
         try:
             tfidf_df = pd.read_excel(tfidf_file)
@@ -332,7 +332,7 @@ with st.container():
                 tfidf_df['Prediction'] = predictions
                 st.dataframe(tfidf_df)
         except FileNotFoundError:
-            st.error(f"File {tfidf_df} tidak ditemukan. Pastikan file berada di lokasi yang sesuai.")
+            st.error(f"File {tfidf_file} tidak ditemukan. Pastikan file berada di lokasi yang sesuai.")
         except Exception as e:
             st.error(f"Terjadi kesalahan: {e}")
 

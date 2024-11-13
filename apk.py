@@ -282,8 +282,8 @@ with st.container():
         selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
         
         # File hasil TF-IDF tetap
-        file_path = "hasil_tfidf.xlsx"
-        df = pd.read_excel(file_path)
+        tfidf_file = "hasil_tfidf.xlsx"
+        df = pd.read_excel(tfidf_file)
         # Cek keberadaan file TF-IDF
         try:
             tfidf_df = pd.read_excel(tfidf_file)

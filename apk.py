@@ -268,29 +268,58 @@ with st.container():
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
     
     elif selected == "Model WKNN":
-        # Fungsi untuk memuat model berdasarkan persentase yang dipilih
-        def load_model_by_percentage(percentage):
-            model_filename = f"best_knn_model.pkl"
+        # Fungsi untuk memuat model dan menampilkan hasil rinci
+        def load_and_display_model_details(percentage):
+            model_filename = f"best_model_knn_{percentage}percent.pkl"
+            results_filename = "training_results_with_rankings.xlsx"
             
-            if os.path.exists(model_filename):
-                model = joblib.load(model_filename)
-                st.write(f"Model {percentage}% loaded successfully.")
-                return model
-            else:
-                st.warning(f"Model for {percentage}% not found.")
-                return None
+            if not os.path.exists(model_filename):
+                st.warning(f"Model untuk persentase {percentage}% tidak ditemukan.")
+                return
         
-        # Daftar pilihan persentase
+            # Muat model
+            best_model = joblib.load(model_filename)
+            st.write(f"Model untuk {percentage}% dimuat.")
+        
+            # Muat hasil pelatihan dari file Excel
+            if os.path.exists(results_filename):
+                results = pd.read_excel(results_filename)
+                
+                # Filter hasil berdasarkan persentase fitur
+                specific_results = results[results['Percentage'] == percentage]
+                if specific_results.empty:
+                    st.warning("Data hasil pelatihan tidak ditemukan untuk persentase ini.")
+                    return
+        
+                # Menampilkan rincian hasil model
+                for _, row in specific_results.iterrows():
+                    params = row['Best Parameters']
+                    accuracy = row['Accuracy']
+                    elapsed_time = row['Elapsed Time (s)']
+                    st.write(f"Params: {params} | Accuracy: {accuracy:.4f} | Time: {elapsed_time:.2f} seconds")
+                
+                # Menampilkan classification report
+                st.subheader("Classification Report:")
+                # Misalkan `classification_report` sudah ada dalam `best_model`
+                if hasattr(best_model, 'classification_report'):
+                    st.text(best_model.classification_report)
+                else:
+                    st.text("Classification report tidak tersedia di model.")
+                
+                # Tampilkan informasi terbaik
+                st.write(f"Model disimpan sebagai: {model_filename}")
+                st.write(f"Best Params for {percentage}% features: {params}")
+                st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
+                st.write(f"Total Elapsed Time for Best Model: {elapsed_time:.2f} seconds")
+            else:
+                st.warning("File hasil pelatihan tidak ditemukan.")
+        
+        # Pilihan persentase yang dapat dipilih pengguna
         percentage_options = [95, 90, 85, 80, 75, 70, 65]
         selected_percentage = st.selectbox("Pilih Persentase Model:", percentage_options)
         
-        # Muat model sesuai dengan persentase yang dipilih
-        best_model = load_model_by_percentage(selected_percentage)
-        
-        # Cek jika model berhasil dimuat
-        if best_model:
-            st.write("Model terbaik untuk persentase yang dipilih:")
-            st.write(best_model)
+        # Memanggil fungsi untuk menampilkan detail model
+        load_and_display_model_details(selected_percentage)
             
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

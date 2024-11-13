@@ -350,8 +350,7 @@ with st.container():
         # Buat select box untuk memilih persentase seleksi fitur
         percentage_options = [95, 90, 85, 80, 75, 70, 65]
         selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
-        
-        # Memuat selector dan model yang sudah disimpan
+       # Memuat selector dan model yang sudah disimpan
         selector = joblib.load(f"feature_selector_{selected_percentage}percent.pkl")
         best_model = joblib.load(f"best_knn_model_{selected_percentage}percent.pkl")
         
@@ -367,15 +366,12 @@ with st.container():
         y_pred = best_model.predict(X_selected)
         best_class_report = classification_report(y_resampled, y_pred)
         best_cm = confusion_matrix(y_resampled, y_pred)
-
         
-        # Tampilkan hasil dalam format yang diinginkan
-        st.write("Hasil Evaluasi Model:")
-        st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
+        # Menampilkan hasil
+        st.write(f"Accuracy: {accuracy:.4f}")
         st.text(best_class_report)
         
-        # Tampilkan Confusion Matrix untuk Model Terbaik
-        st.write("Confusion Matrix untuk Model Terbaik:")
+        # Tampilkan Confusion Matrix
         fig, ax = plt.subplots()
         sns.heatmap(best_cm, annot=True, fmt="d", cmap="Blues", ax=ax)
         plt.xlabel("Predicted Labels")

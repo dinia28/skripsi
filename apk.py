@@ -324,6 +324,7 @@ with st.container():
                 predictions = model.predict(X_selected)
                 tfidf_df['Prediction'] = predictions
                 st.dataframe(tfidf_df)
+        
         except FileNotFoundError:
             st.error(f"File {tfidf_file} tidak ditemukan. Pastikan file berada di lokasi yang sesuai.")
         except Exception as e:

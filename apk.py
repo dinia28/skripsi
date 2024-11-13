@@ -351,18 +351,22 @@ with st.container():
         percentage_options = [95, 90, 85, 80, 75, 70, 65]
         selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
         
-        # Jalankan seleksi fitur dan pelatihan model dengan persentase yang dipilih
-        X_selected, feature_rankings, selector = feature_selection(X_resampled, y_resampled, selected_percentage)
-        accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time, model_results = model_training(
-            X_selected, y_resampled, n_neighbors_options, weights_options, metric_options
-        )
+        # Memuat selector dan model yang sudah disimpan
+        selector = joblib.load(f"feature_selector_{selected_percentage}percent.pkl")
+        best_model = joblib.load(f"best_knn_model_{selected_percentage}percent.pkl")
+        
+        # Gunakan selector untuk memilih fitur
+        X_selected = selector.transform(X_resampled)
+        
+        # Evaluasi model dengan data yang sudah dipilih fiturnya
+        accuracy = best_model.score(X_selected, y_resampled)
+        y_pred = best_model.predict(X_selected)
+        best_class_report = classification_report(y_resampled, y_pred)
+        best_cm = confusion_matrix(y_resampled, y_pred)
         
         # Tampilkan hasil dalam format yang diinginkan
-        st.write("Hasil Pelatihan Model:")
-        for result in model_results:
-            st.write(f"Params: {result['Params']} | Accuracy: {result['Accuracy']:.4f} | Time: {result['Time']:.2f} seconds")
-        
-        st.write("\nClassification Report:")
+        st.write("Hasil Evaluasi Model:")
+        st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
         st.text(best_class_report)
         
         # Tampilkan Confusion Matrix untuk Model Terbaik
@@ -378,9 +382,5 @@ with st.container():
         st.write(f"Best Params for {selected_percentage}% features: {best_param_set}")
         st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
         st.write(f"Total Elapsed Time for Best Model: {elapsed_time:.2f} seconds")
-        
-        # Simpan model terbaik
-        joblib.dump(best_model, f"best_knn_model_{selected_percentage}percent.pkl")
-
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

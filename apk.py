@@ -271,10 +271,10 @@ with st.container():
         # Fungsi untuk memuat model yang sudah disimpan
         def load_trained_model_and_data():
             # Muat model dari file yang sudah disimpan
-            model = joblib.load("/mnt/data/best_knn_model.pkl")
+            model = joblib.load("best_knn_model.pkl")
             
             # Muat hasil pelatihan dari file Excel
-            training_results = pd.read_excel("/mnt/data/training_results_with_rankings.xlsx", sheet_name=None)
+            training_results = pd.read_excel("training_results_with_rankings.xlsx", sheet_name=None)
             
             # Memisahkan hasil yang relevan
             best_param_set = training_results['Best_Params']

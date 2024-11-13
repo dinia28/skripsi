@@ -284,33 +284,37 @@ with st.container():
             # Muat hasil pelatihan dari file Excel
             if os.path.exists(results_filename):
                 results = pd.read_excel(results_filename)
-                
+        
                 # Filter hasil berdasarkan persentase fitur
                 specific_results = results[results['Percentage'] == percentage]
                 if specific_results.empty:
                     st.warning("Data hasil pelatihan tidak ditemukan untuk persentase ini.")
                     return
         
-                # Menampilkan rincian hasil model
-                for _, row in specific_results.iterrows():
+                # Menampilkan rincian hasil untuk setiap kombinasi parameter
+                st.subheader("Detail Hasil untuk Kombinasi Parameter:")
+                for index, row in specific_results.iterrows():
                     params = row['Best Parameters']
                     accuracy = row['Accuracy']
                     elapsed_time = row['Elapsed Time (s)']
                     st.write(f"Params: {params} | Accuracy: {accuracy:.4f} | Time: {elapsed_time:.2f} seconds")
                 
-                # Menampilkan classification report
+                # Menampilkan classification report dari model terbaik
                 st.subheader("Classification Report:")
-                # Misalkan `classification_report` sudah ada dalam `best_model`
                 if hasattr(best_model, 'classification_report'):
                     st.text(best_model.classification_report)
                 else:
                     st.text("Classification report tidak tersedia di model.")
                 
                 # Tampilkan informasi terbaik
+                best_accuracy = specific_results['Accuracy'].max()
+                best_params = specific_results.loc[specific_results['Accuracy'].idxmax(), 'Best Parameters']
+                best_elapsed_time = specific_results.loc[specific_results['Accuracy'].idxmax(), 'Elapsed Time (s)']
+                
                 st.write(f"Model disimpan sebagai: {model_filename}")
-                st.write(f"Best Params for {percentage}% features: {params}")
-                st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
-                st.write(f"Total Elapsed Time for Best Model: {elapsed_time:.2f} seconds")
+                st.write(f"Best Params for {percentage}% features: {best_params}")
+                st.write(f"Best Accuracy on Test Data: {best_accuracy:.4f}")
+                st.write(f"Total Elapsed Time for Best Model: {best_elapsed_time:.2f} seconds")
             else:
                 st.warning("File hasil pelatihan tidak ditemukan.")
         

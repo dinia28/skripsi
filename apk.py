@@ -270,7 +270,7 @@ with st.container():
     elif selected == "Model WKNN":
         # Fungsi untuk memuat model dan menampilkan hasil rinci
         def load_and_display_model_details(percentage):
-            model_filename = f"best_model_knn_{percentage}percent.pkl"
+            model_filename = f"best_knn_model_{percentage}percent.pkl"
             results_filename = "training_results_with_rankings.xlsx"
             
             if not os.path.exists(model_filename):

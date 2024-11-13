@@ -268,35 +268,41 @@ with st.container():
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
     
     elif selected == "Model WKNN":
-        # Fungsi untuk memuat model yang sudah ada sesuai dengan persentase
-        def load_trained_model(model_filename):
-            if os.path.exists(model_filename):
-                # Memuat model yang sudah ada
-                model = joblib.load(model_filename)
-                st.write(f"Model yang sudah dilatih dimuat: {model_filename}")
-                return model
-            else:
-                st.write("Model tidak ditemukan. Melatih model baru...")
-                return None  # Jika model belum ada, kembalikan None
-        
-        # Nama file model berdasarkan persentase yang dipilih
-        model_filename = f"best_knn_model_{selected_percentage}percent.pkl"
-        
-        # Cek apakah model sudah ada dan memuatnya
-        best_model = load_trained_model(model_filename)
-        
-        if best_model is None:
-            # Jika model belum ada, lakukan pelatihan dengan persentase yang dipilih
-            X_selected, feature_rankings, selector = feature_selection(X_resampled, y_resampled, selected_percentage)
-            accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time, model_results = model_training(
-                X_selected, y_resampled, n_neighbors_options, weights_options, metric_options
-            )
+        # Fungsi untuk memuat model yang sudah disimpan
+        def load_trained_model_and_data():
+            # Muat model dari file yang sudah disimpan
+            model = joblib.load("/mnt/data/best_knn_model.pkl")
             
-            # Simpan model terbaik setelah pelatihan
-            joblib.dump(best_model, model_filename)
+            # Muat hasil pelatihan dari file Excel
+            training_results = pd.read_excel("/mnt/data/training_results_with_rankings.xlsx", sheet_name=None)
+            
+            # Memisahkan hasil yang relevan
+            best_param_set = training_results['Best_Params']
+            feature_rankings = training_results['Feature_Rankings']
+            classification_report_text = training_results['Classification_Report']
+            confusion_matrix_data = training_results['Confusion_Matrix']
         
-        else:
-            # Jika model sudah dimuat, bisa langsung digunakan untuk evaluasi atau prediksi
-            st.write("Model siap digunakan untuk prediksi atau evaluasi.")
+            return model, best_param_set, feature_rankings, classification_report_text, confusion_matrix_data
+        
+        # Load model dan data
+        best_model, best_param_set, feature_rankings, classification_report_text, confusion_matrix_data = load_trained_model_and_data()
+        
+        # Tampilkan hasil yang sama seperti di Colab
+        st.write("Model terbaik dari Colab:")
+        st.write(f"Best Params: {best_param_set}")
+        st.write("\nClassification Report:")
+        st.text(classification_report_text)
+        
+        # Tampilkan Confusion Matrix
+        st.write("Confusion Matrix untuk Model Terbaik:")
+        fig, ax = plt.subplots()
+        sns.heatmap(confusion_matrix_data, annot=True, fmt="d", cmap="Blues", ax=ax)
+        plt.xlabel("Predicted Labels")
+        plt.ylabel("True Labels")
+        st.pyplot(fig)
+        
+        # Tampilkan peringkat fitur
+        st.write("Feature Rankings:")
+        st.dataframe(feature_rankings)
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

@@ -355,6 +355,10 @@ with st.container():
         selector = joblib.load(f"feature_selector_{selected_percentage}percent.pkl")
         best_model = joblib.load(f"best_knn_model_{selected_percentage}percent.pkl")
         
+        # Pastikan X_resampled memiliki kolom yang sama dengan yang digunakan oleh selector
+        # Mengatur kolom pada X_resampled agar sesuai dengan kolom pada X (sebelum oversampling)
+        X_resampled = pd.DataFrame(X_resampled, columns=X.columns)
+        
         # Gunakan selector untuk memilih fitur
         X_selected = selector.transform(X_resampled)
         
@@ -363,6 +367,7 @@ with st.container():
         y_pred = best_model.predict(X_selected)
         best_class_report = classification_report(y_resampled, y_pred)
         best_cm = confusion_matrix(y_resampled, y_pred)
+
         
         # Tampilkan hasil dalam format yang diinginkan
         st.write("Hasil Evaluasi Model:")

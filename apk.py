@@ -268,129 +268,73 @@ with st.container():
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
     
     elif selected == "Model WKNN":
-        # Fungsi untuk memuat data
-        def load_data():
-            return pd.read_excel("hasil_tfidf.xlsx")
-        
-        # Fungsi seleksi fitur
-        def feature_selection(X, y, percentage):
-            num_features_to_select = int(percentage / 100 * X.shape[1])
-            selector = SelectKBest(mutual_info_classif, k=num_features_to_select)
-            X_selected = selector.fit_transform(X, y)
-            selected_feature_indices = selector.get_support(indices=True)
-            X_selected_df = pd.DataFrame(X_selected, columns=X.columns[selected_feature_indices])
-        
-            feature_scores = selector.scores_[selected_feature_indices]
-            feature_rankings = pd.DataFrame(
-                data=feature_scores,
-                index=X.columns[selected_feature_indices],
-                columns=[f'Rank_{percentage}%']
-            )
-        
-            return X_selected_df, feature_rankings, selector
-        
-        # Fungsi pelatihan model KNN
-        def model_training(X, y, n_neighbors_options, weights_options, metric_options):
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
-            best_accuracy = 0
-            best_model = None
-            best_param_set = {}
-            best_class_report = ""
-            best_cm = None
-            elapsed_time = 0
-            model_results = []
-        
-            for n_neighbors in n_neighbors_options:
-                for weights in weights_options:
-                    for metric in metric_options:
-                        start_time = time.time()
-        
-                        knn_model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights, metric=metric)
-                        knn_model.fit(X_train, y_train)
-                        accuracy = knn_model.score(X_test, y_test)
-                        end_time = time.time()
-                        elapsed_time = end_time - start_time
-        
-                        model_results.append({
-                            'Params': f"n_neighbors={n_neighbors}, weights={weights}, metric={metric}",
-                            'Accuracy': accuracy,
-                            'Time': elapsed_time
-                        })
-        
-                        if accuracy > best_accuracy:
-                            best_accuracy = accuracy
-                            best_model = knn_model
-                            best_param_set = {'n_neighbors': n_neighbors, 'weights': weights, 'metric': metric}
-                            best_class_report = classification_report(y_test, knn_model.predict(X_test))
-                            best_cm = confusion_matrix(y_test, knn_model.predict(X_test))
-        
-            return best_accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time, model_results
+        # Load model dan selector fitur
+        def load_selector_and_model(selector_file, model_file):
+            selector = joblib.load(selector_file)
+            model = joblib.load(model_file)
+            return selector, model
         
         # Aplikasi Streamlit
-        st.title("Aplikasi WKNN dengan Seleksi Fitur")
+        st.title("Aplikasi WKNN dengan Seleksi Fitur (Model Tersimpan)")
         
-        # Upload file TF-IDF
-        tfidf_file = st.file_uploader("Upload hasil TF-IDF (hasil_tfidf.xlsx)", type="xlsx")
+        # Pilih persentase seleksi fitur
+        percentage_options = [65, 70, 75, 80, 85, 90, 95]
+        selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
         
-        if tfidf_file:
-            tfidf_df = load_data(tfidf_file)
+        # File hasil TF-IDF tetap
+        tfidf_file = "hasil_tfidf.xlsx"
+        
+        # Cek keberadaan file TF-IDF
+        try:
+            tfidf_df = pd.read_excel(tfidf_file)
             st.write("Data Hasil TF-IDF:")
             st.dataframe(tfidf_df)
         
+            # Path file model dan selektor fitur
+            selector_file = f"/mnt/data/feature_selector_{selected_percentage}percent.pkl"
+            model_file = f"/mnt/data/best_knn_model_{selected_percentage}percent.pkl"
+        
+            # Load selector dan model
+            selector, model = load_selector_and_model(selector_file, model_file)
+        
             # Memisahkan fitur dan label
-            X = tfidf_df.drop(columns=['Label'])
-            y = tfidf_df['Label']
+            if 'Label' in tfidf_df.columns:
+                X = tfidf_df.drop(columns=['Label'])
+                y = tfidf_df['Label']
+                st.write("Kolom Label ditemukan, data akan digunakan untuk evaluasi.")
+            else:
+                X = tfidf_df
+                y = None
+                st.write("Kolom Label tidak ditemukan, data akan digunakan untuk prediksi.")
         
-            if X.isnull().sum().sum() > 0:
-                st.warning("Data memiliki NaN. Menghapus NaN dari data.")
-                X = X.dropna()
-                y = y[X.index]
+            # Seleksi fitur
+            X_selected = selector.transform(X)
+            st.write(f"Data setelah Seleksi Fitur ({selected_percentage}%):")
+            st.dataframe(pd.DataFrame(X_selected))
         
-            # Oversample data
-            ros = RandomOverSampler(random_state=42)
-            X_resampled, y_resampled = ros.fit_resample(X, y)
-        
-            # Pilih persentase seleksi fitur
-            percentage_options = [95, 90, 85, 80, 75, 70, 65]
-            selected_percentage = st.selectbox("Pilih Persentase Seleksi Fitur:", percentage_options)
-        
-            X_selected, feature_rankings, selector = feature_selection(X_resampled, y_resampled, selected_percentage)
-            st.write("Fitur yang Dipilih:")
-            st.dataframe(feature_rankings)
-        
-            # Pelatihan model
-            n_neighbors_options = [3, 5, 7, 9]
-            weights_options = ['distance']
-            metric_options = ['euclidean', 'manhattan']
-        
-            if st.button("Latih Model"):
-                accuracy, best_model, best_param_set, best_class_report, best_cm, elapsed_time, model_results = model_training(
-                    X_selected, y_resampled, n_neighbors_options, weights_options, metric_options
-                )
-        
-                st.write("Hasil Pelatihan Model:")
-                for result in model_results:
-                    st.write(f"Params: {result['Params']} | Accuracy: {result['Accuracy']:.4f} | Time: {result['Time']:.2f} seconds")
-        
-                st.write("\nClassification Report:")
-                st.text(best_class_report)
-        
-                st.write("Confusion Matrix untuk Model Terbaik:")
+            if y is not None:
+                # Evaluasi model
+                st.write("Evaluasi Model:")
+                y_pred = model.predict(X_selected)
+                st.write("Classification Report:")
+                st.text(classification_report(y, y_pred))
+                cm = confusion_matrix(y, y_pred)
+                st.write("Confusion Matrix:")
                 fig, ax = plt.subplots()
-                sns.heatmap(best_cm, annot=True, fmt="d", cmap="Blues", ax=ax)
+                sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
                 plt.xlabel("Predicted Labels")
                 plt.ylabel("True Labels")
                 st.pyplot(fig)
-        
-                st.write(f"Best Params for {selected_percentage}% features: {best_param_set}")
-                st.write(f"Best Accuracy on Test Data: {accuracy:.4f}")
-                st.write(f"Total Elapsed Time for Best Model: {elapsed_time:.2f} seconds")
-        
-                # Simpan model terbaik
-                model_filename = f"best_knn_model_{selected_percentage}percent.pkl"
-                joblib.dump(best_model, model_filename)
-                st.write(f"Model disimpan dengan nama: {model_filename}")
+            else:
+                # Prediksi baru
+                st.write("Hasil Prediksi:")
+                predictions = model.predict(X_selected)
+                tfidf_df['Prediction'] = predictions
+                st.dataframe(tfidf_df)
+        except FileNotFoundError:
+            st.error(f"File {tfidf_file} tidak ditemukan. Pastikan file berada di lokasi yang sesuai.")
+        except Exception as e:
+            st.error(f"Terjadi kesalahan: {e}")
 
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

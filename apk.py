@@ -268,21 +268,29 @@ with st.container():
             st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
     
     elif selected == "Model WKNN":
-        training_results = pd.read_excel("training_results_with_rankings.xlsx")
-
-        # Cek kolom yang ada
-        st.write("Kolom yang ada di data:", training_results.columns)
+        # Fungsi untuk memuat model berdasarkan persentase yang dipilih
+        def load_model_by_percentage(percentage):
+            model_filename = f"best_model_knn_{percentage}percent.pkl"
+            
+            if os.path.exists(model_filename):
+                model = joblib.load(model_filename)
+                st.write(f"Model {percentage}% loaded successfully.")
+                return model
+            else:
+                st.warning(f"Model for {percentage}% not found.")
+                return None
         
-        # Ambil nilai dari kolom yang sesuai
-        percentage_values = training_results['Percentage']
-        accuracy_values = training_results['Accuracy']
-        elapsed_time_values = training_results['Elapsed Time (s)']
-        best_parameters_values = training_results['Best Parameters']
+        # Daftar pilihan persentase
+        percentage_options = [95, 90, 85, 80, 75, 70, 65]
+        selected_percentage = st.selectbox("Pilih Persentase Model:", percentage_options)
         
-        # Tampilkan hasil
-        st.write("Data Persentase Seleksi Fitur:", percentage_values)
-        st.write("Akurasi:", accuracy_values)
-        st.write("Waktu Berlalu (detik):", elapsed_time_values)
-        st.write("Parameter Terbaik:", best_parameters_values)
+        # Muat model sesuai dengan persentase yang dipilih
+        best_model = load_model_by_percentage(selected_percentage)
+        
+        # Cek jika model berhasil dimuat
+        if best_model:
+            st.write("Model terbaik untuk persentase yang dipilih:")
+            st.write(best_model)
+        
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")

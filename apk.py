@@ -224,7 +224,7 @@ with st.container():
 
         # Menampilkan hasil di Streamlit
         st.write("Data setelah stopword removal:")
-        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword Removal']])
+        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal']])
 
         # Inisialisasi Porter Stemmer
         

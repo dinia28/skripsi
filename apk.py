@@ -202,14 +202,18 @@ with st.container():
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing']])
         
         # Stopword removal
-        sw = pd.read_csv("combined_stop_words.csv", header=None)[0].tolist()
+        english_stopwords = stopwords.words('english')
+
+        # Mengambil stopwords dari Sastrawi
+        factory = StopWordRemoverFactory()
+        indonesian_stopwords = factory.get_stop_words()
         
-        # Gabungkan stopword default dengan stopword tambahan
-        corpus = sw
+        # Gabungkan keduanya
+        indonesian_stopwords = {'ke', 'di', 'ini', 'dan', 'yang', 'dengan', 'sih', 'itu', 'loh', 'dong', 'deh', 'kan', 'dalam', 'tidak', 'bukan', 'adalah', 'akan', 'telah'}
+        combined_stopwords = set(english_stopwords + list(indonesian_stopwords))
         
-        # Fungsi stopword removal
-        def stopword_removal(words):
-            return [word for word in words if word not in corpus]
+        def stopwordText(words):
+            return [word for word in words if word not in combined_stopwords]
         
         # Menerapkan stopword removal pada kolom 'Tokenizing'
         df['Stopword_Removal'] = df['Tokenizing'].apply(stopword_removal)
@@ -219,11 +223,16 @@ with st.container():
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal']])
 
         # Inisialisasi Porter Stemmer
-        stemmer = PorterStemmer()
+        from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+
+        # Inisialisasi stemmer Sastrawi
+        factory = StemmerFactory()
+        stemmer = factory.create_stemmer()
         
-        # Fungsi stemming
+        # Fungsi untuk stemming
         def stemText(words):
-            return [stemmer.stem(word) for word in words]
+            # Gabungkan kata menjadi string, stem, lalu pecah kembali menjadi list
+            return stemmer.stem(' '.join(words)).split()
         
         # Menerapkan stemming pada kolom 'Stopword_Removal'
         df['Stemming'] = df['Stopword_Removal'].apply(stemText)

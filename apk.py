@@ -239,14 +239,14 @@ with st.container():
             return stemmer.stem(' '.join(words)).split()
         
         # Menerapkan stemming pada kolom 'Stopword_Removal'
-        df['Stemming'] = df['Stopword_Removal'].apply(stemText)
+        df['Stemming'] = df['Stopword Removal'].apply(stemText)
         
         # Menggabungkan hasil stemming menjadi satu kalimat
         df['Full_Text_Stemmed'] = df['Stemming'].apply(lambda x: ' '.join(x))
         
         # Menampilkan hasil akhir di Streamlit
         st.write("Data setelah Stemming:")
-        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal', 'Stemming', 'Full_Text_Stemmed']])
+        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword Removal', 'Stemming', 'Full_Text_Stemmed']])
 
     elif selected == "TF-IDF":
         # Load the dataset from 'hasil_preprocessing.xlsx'

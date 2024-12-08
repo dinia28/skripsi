@@ -12,3 +12,4 @@ nltk
 spacy
 joblib==1.2.0
 seaborn
+Sastrawi

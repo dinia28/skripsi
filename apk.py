@@ -166,14 +166,19 @@ with st.container():
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding']])
         
         # Membaca file slang words
-        slangword_normalisasi = pd.read_csv("combined_slang_words.csv")
+        slangword_normalisasi = pd.read_csv("normalisasi.csv")
+        slangword_normalisasi[['slang', 'normalisasi']] = slangword_normalisasi['slang;normalisasi'].str.split(';', expand=True)
+        # Hapus kolom asli
+        slangword_normalisasi = slangword_normalisasi.drop(columns=['slang;normalisasi'])
+        # Cek hasilnya
+        slangword_normalisasi.head()
+        kata_normalisasi_dict = {}
+        for index, row in slangword_normalisasi.iterrows():
+            if row['slang'] not in kata_normalisasi_dict:
+                kata_normalisasi_dict[row['slang']] = row['normalisasi']
         
-        # Membuat kamus slang words untuk normalisasi
-        kata_normalisasi_dict = {row[0]: row[1] for _, row in slangword_normalisasi.iterrows()}
-        
-        # Fungsi untuk normalisasi kata slang
         def normalisasi_kata(document):
-            return ' '.join([kata_normalisasi_dict.get(term, term) for term in document.split()])
+            return ' '.join([str(kata_normalisasi_dict.get(term, term)) for term in document.split()])
         
         # Menerapkan fungsi normalisasi slang words
         df['CaseFolding'] = df['CaseFolding'].fillna('').astype(str)

@@ -10,6 +10,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
+from nltk.corpus import stopwords
 import subprocess
 subprocess.run(['pip', 'install', 'imbalanced-learn'])
 from imblearn.over_sampling import RandomOverSampler
@@ -24,6 +26,8 @@ import seaborn as sns
 import os
 os.system('pip install nltk')
 from nltk.stem import PorterStemmer
+import nltk
+nltk.download('stopwords')
 
 
 st.set_page_config(

@@ -218,12 +218,6 @@ with st.container():
         def stopwordText(words):
             return [word for word in words if word not in combined_stopwords]
 
-        # Proses Stopword Removal
-        try:
-            data['Stopword Removal'] = data['Tokenizing'].apply(lambda x: stopwordText(eval(x)))
-        except Exception as e:
-            st.error(f"Terjadi kesalahan saat memproses data: {e}")
-            return
         
         # Menampilkan hasil di Streamlit
         st.write("Data setelah stopword removal:")

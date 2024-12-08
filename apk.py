@@ -251,13 +251,13 @@ with st.container():
     elif selected == "TF-IDF":
         # Load the dataset from 'hasil_preprocessing.xlsx'
         df = pd.read_excel("hasil_preprocessing.xlsx")
-        # Assume 'Full_Text_Stemmed' is the column with the processed text for TF-IDF
+        # Assume 'Full Text Stemmed' is the column with the processed text for TF-IDF
         # Create a new DataFrame for TF-IDF
-        df_tfidf = df[['Full_Text_Stemmed', 'Label']]  
+        df_tfidf = df[['Full Text Stemmed', 'Label']]  
         # Initialize the TfidfVectorizer
         vectorizer = TfidfVectorizer()
-        # Transform the 'Full_Text_Stemmed' column into a TF-IDF matrix
-        tfidf_matrix = vectorizer.fit_transform(df_tfidf['Full_Text_Stemmed'].values.astype('U')) 
+        # Transform the 'Full Text Stemmed' column into a TF-IDF matrix
+        tfidf_matrix = vectorizer.fit_transform(df_tfidf['Full Text Stemmed'].values.astype('U')) 
         # Get feature names (the words corresponding to the TF-IDF values)
         feature_names = vectorizer.get_feature_names_out()
         # Convert the TF-IDF matrix into a DataFrame

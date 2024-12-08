@@ -221,10 +221,10 @@ with st.container():
         # Fungsi untuk menghapus stopwords
         def stopwordText(words):
             return [word for word in words if word not in combined_stopwords]
-
+        df['Stopword Removal'] = df['Tokenizing'].apply(stopwordText)
         # Menampilkan hasil di Streamlit
         st.write("Data setelah stopword removal:")
-        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'stopword_removal']])
+        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword Removal']])
 
         # Inisialisasi Porter Stemmer
         

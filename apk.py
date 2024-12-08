@@ -203,21 +203,27 @@ with st.container():
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing']])
         
         # Stopword removal
+        # Gabungkan stopwords bahasa Inggris dan Indonesia
         english_stopwords = stopwords.words('english')
-
-        # Mengambil stopwords dari Sastrawi
         factory = StopWordRemoverFactory()
         indonesian_stopwords = factory.get_stop_words()
         
-        # Gabungkan keduanya
-        indonesian_stopwords = {'ke', 'di', 'ini', 'dan', 'yang', 'dengan', 'sih', 'itu', 'loh', 'dong', 'deh', 'kan', 'dalam', 'tidak', 'bukan', 'adalah', 'akan', 'telah'}
-        combined_stopwords = set(english_stopwords + list(indonesian_stopwords))
-        
+        # Tambahkan stopwords tambahan
+        additional_stopwords = {'ke', 'di', 'ini', 'dan', 'yang', 'dengan', 'sih', 'itu', 
+                                'loh', 'dong', 'deh', 'kan', 'dalam', 'tidak', 'bukan', 
+                                'adalah', 'akan', 'telah'}
+        combined_stopwords = set(english_stopwords + list(indonesian_stopwords) + list(additional_stopwords))
+
+        # Fungsi untuk menghapus stopwords
         def stopwordText(words):
             return [word for word in words if word not in combined_stopwords]
-        
-        # Menerapkan stopword removal pada kolom 'Tokenizing'
-        df['Stopword_Removal'] = df['Tokenizing'].apply(stopword_removal)
+
+        # Proses Stopword Removal
+        try:
+            data['Stopword Removal'] = data['Tokenizing'].apply(lambda x: stopwordText(eval(x)))
+        except Exception as e:
+            st.error(f"Terjadi kesalahan saat memproses data: {e}")
+            return
         
         # Menampilkan hasil di Streamlit
         st.write("Data setelah stopword removal:")

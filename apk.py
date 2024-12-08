@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import subprocess
 subprocess.run(['pip', 'install', 'imbalanced-learn'])
 from imblearn.over_sampling import RandomOverSampler
@@ -223,7 +224,7 @@ with st.container():
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal']])
 
         # Inisialisasi Porter Stemmer
-        from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+        
 
         # Inisialisasi stemmer Sastrawi
         factory = StemmerFactory()

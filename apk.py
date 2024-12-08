@@ -209,20 +209,19 @@ with st.container():
         # Stopword removal
         # Gabungkan stopwords bahasa Inggris dan Indonesia
         english_stopwords = stopwords.words('english')
+
+        # Mengambil stopwords dari Sastrawi
         factory = StopWordRemoverFactory()
         indonesian_stopwords = factory.get_stop_words()
         
-        # Tambahkan stopwords tambahan
-        additional_stopwords = {'ke', 'di', 'ini', 'dan', 'yang', 'dengan', 'sih', 'itu', 
-                                'loh', 'dong', 'deh', 'kan', 'dalam', 'tidak', 'bukan', 
-                                'adalah', 'akan', 'telah'}
-        combined_stopwords = set(english_stopwords + list(indonesian_stopwords) + list(additional_stopwords))
+        # Tambahkan daftar stopwords kustom (opsional)
+        custom_stopwords = {'ke', 'di', 'ini', 'dan', 'yang', 'dengan', 'sih', 'itu', 'loh', 'dong', 'deh', 'kan', 'dalam', 'tidak', 'bukan', 'adalah', 'akan', 'telah'}
+        combined_stopwords = set(english_stopwords + list(indonesian_stopwords) + list(custom_stopwords))
 
         # Fungsi untuk menghapus stopwords
         def stopwordText(words):
             return [word for word in words if word not in combined_stopwords]
 
-        
         # Menampilkan hasil di Streamlit
         st.write("Data setelah stopword removal:")
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword Removal']])
